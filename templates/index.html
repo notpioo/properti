@@ -1,0 +1,367 @@
+{% extends "base.html" %}
+
+{% block content %}
+<!-- Main Content Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <h1 class="display-4 fw-bold text-center mb-3">Temukan Rumah Impian Anda</h1>
+                <p class="lead text-center mb-5">Sistem rekomendasi harga rumah dengan teknologi AI dan Machine Learning untuk membantu Anda menemukan properti terbaik.</p>
+
+                <div class="card border-0 shadow-lg">
+                    <div class="card-body p-0">
+                        <!-- Tab Navigation -->
+                        <nav>
+                            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                                <button class="nav-link active" id="nav-search-tab" data-bs-toggle="tab" data-bs-target="#nav-search" type="button" role="tab">
+                                    <i class="fas fa-search"></i> Cari Properti
+                                </button>
+                                <button class="nav-link" id="nav-predict-tab" data-bs-toggle="tab" data-bs-target="#nav-predict" type="button" role="tab">
+                                    <i class="fas fa-calculator"></i> Prediksi Harga
+                                </button>
+                            </div>
+                        </nav>
+
+                        <!-- Tab Content -->
+                        <div class="tab-content" id="nav-tabContent">
+                            <!-- Search Tab -->
+                            <div class="tab-pane fade show active" id="nav-search" role="tabpanel">
+                                <div class="p-4">
+                                    <h5 class="card-title text-white mb-3">Chat AI untuk Cari Properti</h5>
+                                    <form id="searchForm">
+                                        <div class="mb-3">
+                                            <textarea class="form-control" id="searchQuery" rows="3" placeholder="Contoh: Saya cari rumah 2 kamar dengan budget 500 juta di daerah yang dekat sekolah"></textarea>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary w-100">
+                                            <i class="fas fa-comments"></i> Cari dengan AI
+                                        </button>
+                                    </form>
+
+                                    <!-- Loading indicator -->
+                                    <div id="searchLoading" class="text-center mt-3 text-white" style="display: none;">
+                                        <i class="fas fa-spinner fa-spin"></i> AI sedang mencari...
+                                    </div>
+
+                                    <!-- Property Results -->
+                                    <div id="searchResults" class="mt-4" style="display: none;">
+                                        <h6 class="text-white">Properti yang Ditemukan:</h6>
+                                        <div id="propertyCards"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Predict Tab -->
+                            <div class="tab-pane fade" id="nav-predict" role="tabpanel">
+                                <div class="p-4">
+                                    <h5 class="card-title text-white mb-3">Prediksi Harga Rumah</h5>
+                                    <form id="predictForm">
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label text-white">Luas Tanah (m²)</label>
+                                                <input type="number" class="form-control" id="luas_tanah" required>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label text-white">Luas Bangunan (m²)</label>
+                                                <input type="number" class="form-control" id="luas_bangunan" required>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label text-white">Kamar Tidur</label>
+                                                <input type="number" class="form-control" id="kamar_tidur" min="1" required>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label text-white">Kamar Mandi</label>
+                                                <input type="number" class="form-control" id="kamar_mandi" min="1" required>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label text-white">Jenis Jalan</label>
+                                                <select class="form-select" id="jenis_jalan" required>
+                                                    <option value="">Pilih jenis jalan</option>
+                                                    <option value="gang_kecil">Gang Kecil</option>
+                                                    <option value="jalan_sedang">Jalan Sedang</option>
+                                                    <option value="jalan_besar">Jalan Besar</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-md-6 mb-3">
+                                                <label class="form-label text-white">Kondisi Bangunan</label>
+                                                <select class="form-select" id="kondisi" required>
+                                                    <option value="">Pilih kondisi</option>
+                                                    <option value="baru">Baru</option>
+                                                    <option value="baik">Baik</option>
+                                                    <option value="renovasi_ringan">Renovasi Ringan</option>
+                                                    <option value="butuh_renovasi">Butuh Renovasi</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="btn btn-primary w-100">
+                                            <i class="fas fa-calculator"></i> Prediksi Harga
+                                        </button>
+                                    </form>
+
+                                    <!-- Prediction Result -->
+                                    <div id="predictionResult" class="mt-4" style="display: none;">
+                                        <div class="alert alert-success">
+                                            <h6>Hasil Prediksi:</h6>
+                                            <h4 class="text-success" id="predictedPrice"></h4>
+                                            <small class="text-muted">*Prediksi berdasarkan model machine learning</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Properties -->
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Properti Unggulan</h2>
+        <div class="row">
+            {% for property in properties %}
+            <div class="col-lg-4 col-md-6 mb-4">
+                <div class="card property-card h-100">
+                    {% if property.image %}
+                    <img src="{{ url_for('static', filename='images/' + property.image) }}" class="card-img-top" style="height: 200px; object-fit: cover;" alt="Property Image">
+                    {% else %}
+                    <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                        <i class="fas fa-home fa-3x text-muted"></i>
+                    </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ property.alamat or 'Alamat tidak tersedia' }}</h5>
+                        <p class="card-text">
+                            <i class="fas fa-bed"></i> {{ property.kamar_tidur }} kamar &nbsp;
+                            <i class="fas fa-bath"></i> {{ property.kamar_mandi }} kamar mandi<br>
+                            <i class="fas fa-ruler-combined"></i> {{ property.luas_tanah }}m² / {{ property.luas_bangunan }}m²
+                        </p>
+                        {% if property.harga %}
+                        <h5 class="text-primary">Rp {{ "{:,.0f}".format(property.harga) }}</h5>
+                        {% endif %}
+                    </div>
+                    <div class="card-footer bg-transparent">
+                        <a href="{{ url_for('property_detail', property_id=property.id) }}" class="btn btn-primary w-100">Lihat Detail</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="text-center">
+            <a href="{{ url_for('properties') }}" class="btn btn-outline-primary btn-lg">Lihat Semua Properti</a>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="bg-light py-5">
+    <div class="container">
+        <h2 class="text-center mb-5">Fitur Unggulan</h2>
+        <div class="row">
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="text-center">
+                    <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="fas fa-brain fa-2x"></i>
+                    </div>
+                    <h5>Prediksi AI</h5>
+                    <p>Prediksi harga rumah akurat menggunakan Machine Learning</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="text-center">
+                    <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="fas fa-comments fa-2x"></i>
+                    </div>
+                    <h5>Chatbot AI</h5>
+                    <p>Konsultasi langsung dengan assistant AI untuk rekomendasi</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="text-center">
+                    <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="fas fa-map-marked-alt fa-2x"></i>
+                    </div>
+                    <h5>Peta Interaktif</h5>
+                    <p>Visualisasi lokasi properti dan fasilitas sekitar</p>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6 mb-4">
+                <div class="text-center">
+                    <div class="bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 80px; height: 80px;">
+                        <i class="fas fa-chart-line fa-2x"></i>
+                    </div>
+                    <h5>Analisis Pasar</h5>
+                    <p>Trend harga dan analisis pasar properti terkini</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Search Form Handler
+document.getElementById('searchForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const query = document.getElementById('searchQuery').value.trim();
+    if (!query) return;
+
+    // Show loading
+    document.getElementById('searchLoading').style.display = 'block';
+    document.getElementById('searchResults').style.display = 'none';
+
+    // Load real properties from database
+    loadPropertiesFromDatabase(query);
+});
+
+// Prediction Form Handler
+document.getElementById('predictForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
+    const formData = {
+        luas_tanah: document.getElementById('luas_tanah').value,
+        luas_bangunan: document.getElementById('luas_bangunan').value,
+        kamar_tidur: document.getElementById('kamar_tidur').value,
+        kamar_mandi: document.getElementById('kamar_mandi').value,
+        jenis_jalan: document.getElementById('jenis_jalan').value,
+        kondisi: document.getElementById('kondisi').value
+    };
+
+    fetch('/api/predict', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.formatted) {
+            document.getElementById('predictionResult').style.display = 'block';
+            document.getElementById('predictedPrice').textContent = data.formatted;
+        }
+    })
+    .catch(error => {
+        alert('Terjadi kesalahan saat prediksi harga');
+    });
+});
+
+// Load properties from database
+function loadPropertiesFromDatabase(query) {
+    fetch('/api/properties')
+    .then(response => response.json())
+    .then(properties => {
+        document.getElementById('searchLoading').style.display = 'none';
+
+        const container = document.getElementById('propertyCards');
+        container.innerHTML = '';
+
+        // Filter properties based on query (intelligent matching)
+        let filteredProperties = properties;
+        if (query) {
+            const queryLower = query.toLowerCase();
+
+            // Extract budget from query
+            let budgetMatch = null;
+            const budgetRegex = /(\d+)\s*juta/gi;
+            const matches = queryLower.match(budgetRegex);
+            if (matches) {
+                const budgetStr = matches[0].replace(/[^\d]/g, '');
+                const budget = parseInt(budgetStr) * 1000000; // Convert juta to rupiah
+                budgetMatch = budget;
+            }
+
+            // Extract number of rooms from query
+            let roomsMatch = null;
+            const roomsRegex = /(\d+)\s*kamar/gi;
+            const roomMatches = queryLower.match(roomsRegex);
+            if (roomMatches) {
+                const roomsStr = roomMatches[0].replace(/[^\d]/g, '');
+                roomsMatch = parseInt(roomsStr);
+            }
+
+            filteredProperties = properties.filter(property => {
+                let matches = true;
+
+                // Budget filtering (within 20% tolerance)
+                if (budgetMatch && property.harga) {
+                    const tolerance = budgetMatch * 0.2; // 20% tolerance
+                    const minPrice = budgetMatch - tolerance;
+                    const maxPrice = budgetMatch + tolerance;
+                    matches = matches && (property.harga >= minPrice && property.harga <= maxPrice);
+                }
+
+                // Rooms filtering
+                if (roomsMatch) {
+                    matches = matches && (property.kamar_tidur >= roomsMatch);
+                }
+
+                // Location/address filtering
+                if (queryLower.includes('sekolah') || queryLower.includes('dekat sekolah')) {
+                    matches = matches && (property.jarak_sekolah <= 1000);
+                }
+
+                return matches;
+            });
+
+            // If no specific filters found, do general text search
+            if (!budgetMatch && !roomsMatch && !queryLower.includes('sekolah')) {
+                filteredProperties = properties.filter(property => {
+                    return property.alamat && property.alamat.toLowerCase().includes(queryLower);
+                });
+            }
+        }
+
+        // Show first 5 properties
+        const displayProperties = filteredProperties.slice(0, 5);
+
+        if (displayProperties.length === 0) {
+            container.innerHTML = '<p class="text-white text-center">Tidak ada properti yang ditemukan untuk pencarian Anda.</p>';
+        } else {
+            displayProperties.forEach(property => {
+                const card = document.createElement('div');
+                card.className = 'mb-3';
+                card.innerHTML = `
+                    <a href="/property/${property.id}" class="text-decoration-none">
+                        <div class="card property-card-small" style="cursor: pointer; transition: transform 0.2s;">
+                            <div class="row g-0">
+                                <div class="col-4">
+                                    ${property.image ? 
+                                        `<img src="/static/images/${property.image}" class="img-fluid rounded-start" style="height: 80px; object-fit: cover;" alt="Property">` :
+                                        `<div class="bg-light d-flex align-items-center justify-content-center rounded-start" style="height: 80px;"><i class="fas fa-home text-muted"></i></div>`
+                                    }
+                                </div>
+                                <div class="col-8">
+                                    <div class="card-body p-2">
+                                        <h6 class="card-title mb-1 text-white">${property.alamat || 'Alamat tidak tersedia'}</h6>
+                                        <small class="text-light">${property.kamar_tidur} kamar • ${property.luas_tanah}m²</small>
+                                        ${property.harga ? `<p class="text-primary mb-0"><strong>Rp ${property.harga.toLocaleString()}</strong></p>` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        document.getElementById('searchResults').style.display = 'block';
+    })
+    .catch(error => {
+        document.getElementById('searchLoading').style.display = 'none';
+        const container = document.getElementById('propertyCards');
+        container.innerHTML = '<p class="text-white text-center">Terjadi kesalahan saat mengambil data properti.</p>';
+        document.getElementById('searchResults').style.display = 'block';
+    });
+}
+</script>
+{% endblock %}

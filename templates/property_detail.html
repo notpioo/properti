@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card">
+                {% if property.image %}
+                <img src="{{ url_for('static', filename='images/' + property.image) }}" class="card-img-top" style="height: 400px; object-fit: cover;" alt="Property">
+                {% else %}
+                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 400px;">
+                    <i class="fas fa-home fa-5x text-muted"></i>
+                </div>
+                {% endif %}
+                <div class="card-body">
+                    <h2 class="card-title">{{ property.alamat }}</h2>
+                    {% if property.harga %}
+                    <h3 class="text-primary mb-3">Rp {{ "{:,.0f}".format(property.harga) }}</h3>
+                    {% endif %}
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Detail Properti</h5>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-bed"></i> {{ property.kamar_tidur }} Kamar Tidur</li>
+                                <li><i class="fas fa-bath"></i> {{ property.kamar_mandi }} Kamar Mandi</li>
+                                <li><i class="fas fa-ruler-combined"></i> {{ property.luas_tanah }}m² Luas Tanah</li>
+                                <li><i class="fas fa-home"></i> {{ property.luas_bangunan }}m² Luas Bangunan</li>
+                                <li><i class="fas fa-calendar"></i> Tahun {{ property.tahun_dibangun }}</li>
+                                {% if property.carport %}
+                                <li><i class="fas fa-car"></i> {{ property.carport }} Carport</li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Informasi Lokasi</h5>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-road"></i> {{ property.jenis_jalan|replace('_', ' ')|title }}</li>
+                                <li><i class="fas fa-tools"></i> {{ property.kondisi|replace('_', ' ')|title }}</li>
+                                <li><i class="fas fa-certificate"></i> {{ property.sertifikat }}</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Google Maps -->
+            {% if property.latitude and property.longitude %}
+            <div class="card mt-4">
+                <div class="card-header">
+                    <h5>Lokasi Properti</h5>
+                </div>
+                <div class="card-body">
+                    <div id="map" style="height: 300px;"></div>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Properti Serupa</h5>
+                </div>
+                <div class="card-body">
+                    {% for similar in similar_properties %}
+                    <div class="d-flex mb-3">
+                        <div class="flex-grow-1">
+                            <h6 class="mb-1">{{ similar.alamat[:50] }}...</h6>
+                            <small class="text-muted">{{ similar.kamar_tidur }} kamar • {{ similar.luas_tanah }}m²</small>
+                            {% if similar.harga %}
+                            <p class="text-primary mb-0">Rp {{ "{:,.0f}".format(similar.harga) }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <hr>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{% if property.latitude and property.longitude %}
+<!-- Leaflet CSS -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<!-- Leaflet JavaScript -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize map with property coordinates
+    const map = L.map('map').setView([{{ property.latitude }}, {{ property.longitude }}], 15);
+    
+    // Add OpenStreetMap tiles (completely free!)
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+    
+    // Add marker for property location
+    const marker = L.marker([{{ property.latitude }}, {{ property.longitude }}]).addTo(map);
+    
+    // Add popup with property information
+    marker.bindPopup(`
+        <div style="color: #333;">
+            <h6 style="margin-bottom: 5px;">{{ property.alamat }}</h6>
+            <p style="margin: 2px 0;">{{ property.kamar_tidur }} kamar • {{ property.luas_tanah }}m²</p>
+            {% if property.harga %}
+            <p style="margin: 2px 0; color: #007bff; font-weight: bold;">Rp {{ "{:,.0f}".format(property.harga) }}</p>
+            {% endif %}
+        </div>
+    `).openPopup();
+});
+</script>
+{% endif %}
+{% endblock %}

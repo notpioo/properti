@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <h2 class="text-center mb-4">Chat dengan AI Assistant</h2>
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">PropertyAI Assistant</h5>
+                </div>
+                <div class="card-body" style="height: 500px; overflow-y: auto;" id="chatMessages">
+                    <div class="mb-3">
+                        <div class="bg-light p-3 rounded">
+                            <strong>AI:</strong> Halo! Saya adalah assistant AI untuk membantu Anda mencari properti dan informasi harga. Silakan tanyakan apa saja!
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <form id="chatForm">
+                        <div class="input-group">
+                            <input type="text" class="form-control" id="messageInput" placeholder="Ketik pesan Anda..." required>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-paper-plane"></i> Kirim
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.getElementById('chatForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    sendMessage();
+});
+
+function sendMessage() {
+    const input = document.getElementById('messageInput');
+    const messages = document.getElementById('chatMessages');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    // Add user message
+    messages.innerHTML += `
+        <div class="mb-3">
+            <div class="text-end">
+                <span class="bg-primary text-white p-2 rounded d-inline-block">
+                    <strong>Anda:</strong> ${message}
+                </span>
+            </div>
+        </div>
+    `;
+    input.value = '';
+    
+    // Add loading message
+    messages.innerHTML += `
+        <div class="mb-3" id="loadingMessage">
+            <div class="bg-light p-3 rounded">
+                <strong>AI:</strong> <i class="fas fa-spinner fa-spin"></i> Sedang mengetik...
+            </div>
+        </div>
+    `;
+    
+    messages.scrollTop = messages.scrollHeight;
+    
+    // Send to server
+    fetch('/chat', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `message=${encodeURIComponent(message)}`
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Remove loading message
+        document.getElementById('loadingMessage').remove();
+        
+        // Add AI response
+        messages.innerHTML += `
+            <div class="mb-3">
+                <div class="bg-light p-3 rounded">
+                    <strong>AI:</strong> ${data.response}
+                </div>
+            </div>
+        `;
+        messages.scrollTop = messages.scrollHeight;
+    })
+    .catch(error => {
+        document.getElementById('loadingMessage').remove();
+        messages.innerHTML += `
+            <div class="mb-3">
+                <div class="bg-danger text-white p-3 rounded">
+                    <strong>Error:</strong> Tidak dapat terhubung ke server
+                </div>
+            </div>
+        `;
+    });
+}
+</script>
+{% endblock %}

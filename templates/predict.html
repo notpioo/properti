@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <h2 class="text-center mb-4">Prediksi Harga Rumah</h2>
+            <div class="card">
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Luas Tanah (m²)</label>
+                                <input type="number" class="form-control" name="luas_tanah" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Luas Bangunan (m²)</label>
+                                <input type="number" class="form-control" name="luas_bangunan" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Kamar Tidur</label>
+                                <input type="number" class="form-control" name="kamar_tidur" min="1" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Kamar Mandi</label>
+                                <input type="number" class="form-control" name="kamar_mandi" min="1" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Jenis Jalan</label>
+                                <select class="form-select" name="jenis_jalan" required>
+                                    <option value="">Pilih jenis jalan</option>
+                                    <option value="gang_kecil">Gang Kecil</option>
+                                    <option value="jalan_sedang">Jalan Sedang</option>
+                                    <option value="jalan_besar">Jalan Besar</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Kondisi Bangunan</label>
+                                <select class="form-select" name="kondisi" required>
+                                    <option value="">Pilih kondisi</option>
+                                    <option value="baru">Baru</option>
+                                    <option value="baik">Baik</option>
+                                    <option value="renovasi_ringan">Renovasi Ringan</option>
+                                    <option value="butuh_renovasi">Butuh Renovasi</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Prediksi Harga</button>
+                    </form>
+                    
+                    {% if prediction %}
+                    <div class="alert alert-success mt-4">
+                        <h5>Hasil Prediksi:</h5>
+                        <h3 class="text-success">{{ prediction }}</h3>
+                        <small class="text-muted">*Prediksi berdasarkan model machine learning dengan data properti yang tersedia</small>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
