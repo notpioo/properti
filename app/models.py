@@ -102,10 +102,18 @@ class BasePriceRepository:
             return default_prices
     
     @staticmethod
-    def save_base_prices(base_prices: Dict) -> None:
+    def save_base_prices(base_prices: Dict) -> bool:
         """Save base price settings to JSON file"""
-        with open('data/base_prices.json', 'w') as f:
-            json.dump(base_prices, f, indent=2)
+        try:
+            # Ensure the data directory exists
+            os.makedirs('data', exist_ok=True)
+            
+            with open('data/base_prices.json', 'w') as f:
+                json.dump(base_prices, f, indent=2)
+            return True
+        except Exception as e:
+            print(f"Error saving base prices: {e}")
+            return False
     
     @staticmethod
     def update_base_prices(updated_data: Dict) -> bool:

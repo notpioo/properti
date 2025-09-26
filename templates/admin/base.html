@@ -32,17 +32,22 @@
             // Remove all active classes first
             sidebarLinks.forEach(link => link.classList.remove('active'));
             
-            // Add active class to the correct link based on current path
-            sidebarLinks.forEach(link => {
-                const href = link.getAttribute('href');
-                if (href && currentPath.includes(href)) {
-                    link.classList.add('active');
-                }
-            });
+            // Determine which link should be active based on exact path matching
+            let activeLink = null;
             
-            // Special case for admin root
-            if (currentPath === '/admin/' || currentPath === '/admin') {
-                document.querySelector('a[href*="admin_panel"]')?.classList.add('active');
+            if (currentPath === '/admin/predictions') {
+                activeLink = document.querySelector('a[href*="predictions"]');
+            } else if (currentPath === '/admin/properties') {
+                activeLink = document.querySelector('a[href*="properties"]');
+            } else if (currentPath === '/admin/' || currentPath === '/admin') {
+                activeLink = document.querySelector('a[href*="admin_panel"]');
+            } else if (currentPath.includes('/admin/') && currentPath.includes('settings')) {
+                activeLink = document.querySelector('a[href*="settings"]');
+            }
+            
+            // Add active class only to the determined link
+            if (activeLink) {
+                activeLink.classList.add('active');
             }
         });
     </script>

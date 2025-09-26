@@ -141,6 +141,17 @@
                         </select>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-light">Nama Penjual</label>
+                        <input type="text" class="form-control bg-dark text-light border-secondary" name="nama_penjual" value="{{ property.nama_penjual or '' }}" placeholder="Contoh: John Doe">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-light">Nomor Penjual (WhatsApp)</label>
+                        <input type="text" class="form-control bg-dark text-light border-secondary" name="nomor_penjual" value="{{ property.nomor_penjual or '' }}" placeholder="Contoh: 08123456789">
+                        <small class="text-muted">Format: 08xxxxxxxx (tanpa +62)</small>
+                    </div>
+                </div>
                 <div class="row mt-4">
                     <div class="col-md-12">
                         <button type="submit" class="btn btn-success me-2">

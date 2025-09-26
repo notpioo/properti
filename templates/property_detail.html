@@ -142,15 +142,45 @@
         <div class="col-lg-4">
             <!-- Contact Action -->
             <div class="card mb-4">
-                <div class="card-body text-center p-4">
-                    <h6 class="mb-3">Tertarik dengan properti ini?</h6>
+                <div class="card-body p-4">
+                    <h6 class="mb-3 text-center">Tertarik dengan properti ini?</h6>
+                    
+                    <!-- Seller Info -->
+                    {% if property.nama_penjual or property.nomor_penjual %}
+                    <div class="seller-info mb-4 p-3 rounded" style="background-color: #f8f9fa; border: 1px solid #dee2e6;">
+                        <h6 class="text-dark mb-2"><i class="fas fa-user text-primary me-2"></i>Informasi Penjual</h6>
+                        {% if property.nama_penjual %}
+                        <p class="mb-1 text-dark"><strong>Nama:</strong> {{ property.nama_penjual }}</p>
+                        {% endif %}
+                        {% if property.nomor_penjual %}
+                        <p class="mb-0 text-dark"><strong>Kontak:</strong> {{ property.nomor_penjual }}</p>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                    
                     <div class="d-grid gap-2">
-                        <button class="btn btn-primary btn-lg">
-                            <i class="fas fa-phone me-2"></i>Hubungi Penjual
+                        {% if property.nomor_penjual %}
+                        {% set clean_phone = property.nomor_penjual.replace(' ', '').replace('-', '').replace('(', '').replace(')', '') %}
+                        {% if clean_phone.startswith('0') %}
+                        {% set normalized_phone = '62' + clean_phone[1:] %}
+                        {% elif clean_phone.startswith('+62') %}
+                        {% set normalized_phone = clean_phone[1:] %}
+                        {% elif clean_phone.startswith('62') %}
+                        {% set normalized_phone = clean_phone %}
+                        {% else %}
+                        {% set normalized_phone = '62' + clean_phone %}
+                        {% endif %}
+                        {% set seller_name = property.nama_penjual or 'Penjual' %}
+                        {% set property_name = property.judul_properti or property.alamat %}
+                        <a href="https://wa.me/{{ normalized_phone }}?text=Halo%20{{ seller_name }},%20saya%20tertarik%20dengan%20properti%20{{ property_name }}%20yang%20sedang%20dijual.%20Bisa%20kita%20diskusi%20lebih%20lanjut?" 
+                           target="_blank" class="btn btn-success btn-lg">
+                            <i class="fab fa-whatsapp me-2"></i>Hubungi via WhatsApp
+                        </a>
+                        {% else %}
+                        <button class="btn btn-secondary btn-lg" disabled>
+                            <i class="fas fa-phone me-2"></i>Kontak Belum Tersedia
                         </button>
-                        <button class="btn btn-outline-primary">
-                            <i class="fas fa-heart me-2"></i>Simpan Favorit
-                        </button>
+                        {% endif %}
                     </div>
                 </div>
             </div>

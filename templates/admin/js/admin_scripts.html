@@ -216,7 +216,9 @@ function showSection(sectionId) {
 }
 
 // Test prediction form
-document.getElementById('testPredictForm').addEventListener('submit', function(e) {
+const testPredictForm = document.getElementById('testPredictForm');
+if (testPredictForm) {
+    testPredictForm.addEventListener('submit', function(e) {
     e.preventDefault();
 
     const formData = {
@@ -251,10 +253,13 @@ document.getElementById('testPredictForm').addEventListener('submit', function(e
     .catch(error => {
         console.error('Error:', error);
     });
-});
+    });
+}
 
 // Base Price Management
-document.getElementById('loadCurrentSettings').addEventListener('click', function() {
+const loadCurrentSettings = document.getElementById('loadCurrentSettings');
+if (loadCurrentSettings) {
+    loadCurrentSettings.addEventListener('click', function() {
     fetch('/admin/get_base_prices')
     .then(response => response.json())
     .then(data => {
@@ -271,9 +276,12 @@ document.getElementById('loadCurrentSettings').addEventListener('click', functio
             document.getElementById('condition_butuh_renovasi').value = prices.condition_multipliers.butuh_renovasi;
         }
     });
-});
+    });
+}
 
-document.getElementById('basePriceForm').addEventListener('submit', function(e) {
+const basePriceForm = document.getElementById('basePriceForm');
+if (basePriceForm) {
+    basePriceForm.addEventListener('submit', function(e) {
     e.preventDefault();
     
     const formData = {
@@ -306,9 +314,12 @@ document.getElementById('basePriceForm').addEventListener('submit', function(e) 
         console.error('Error:', error);
         alert('Terjadi kesalahan saat menyimpan pengaturan.');
     });
-});
+    });
+}
 
-document.getElementById('calculateTest').addEventListener('click', function() {
+const calculateTest = document.getElementById('calculateTest');
+if (calculateTest) {
+    calculateTest.addEventListener('click', function() {
     const testData = {
         luas_tanah: 100,
         luas_bangunan: 80,
@@ -335,10 +346,20 @@ document.getElementById('calculateTest').addEventListener('click', function() {
     .catch(error => {
         console.error('Error:', error);
     });
-});
+    });
+}
 
 // Auto load current settings on page load
 document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('loadCurrentSettings').click();
+    const loadCurrentSettings = document.getElementById('loadCurrentSettings');
+    if (loadCurrentSettings) {
+        loadCurrentSettings.click();
+    }
+    
+    // Set dashboard as active section by default
+    const dashboardSection = document.getElementById('dashboard');
+    if (dashboardSection) {
+        dashboardSection.classList.add('active');
+    }
 });
 </script>

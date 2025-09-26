@@ -1,42 +1,352 @@
 
-<div class="content-section" id="predictions">
-    <div class="content-header">
-        <h2>Test Prediksi Harga</h2>
-        <p class="text-muted">Test model machine learning</p>
-    </div>
+{% extends "admin/base.html" %}
 
-    <div class="card">
-        <div class="card-body">
-            <form id="testPredictForm">
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Luas Tanah (m²)</label>
-                        <input type="number" class="form-control" id="test_luas_tanah" value="100">
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Luas Bangunan (m²)</label>
-                        <input type="number" class="form-control" id="test_luas_bangunan" value="80">
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Kamar Tidur</label>
-                        <input type="number" class="form-control" id="test_kamar_tidur" value="3">
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="form-label">Kamar Mandi</label>
-                        <input type="number" class="form-control" id="test_kamar_mandi" value="2">
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-primary">Test Prediksi</button>
-            </form>
+{% block title %}Pengaturan Harga Dasar - Admin{% endblock %}
 
-            <div id="testPredictResult" class="mt-4" style="display: none;">
-                <div class="alert alert-success">
-                    <h5>Hasil Prediksi:</h5>
-                    <h3 class="text-success" id="testPredictPrice"></h3>
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="card bg-dark border-secondary">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-coins"></i> Harga Dasar Properti Prabumulih</h5>
+                <small>Harga patokan saat ini untuk prediksi AI</small>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <!-- Current Base Prices Display -->
+                    <div class="col-md-6">
+                        <div class="card bg-success text-white mb-4">
+                            <div class="card-header">
+                                <h6 class="mb-0"><i class="fas fa-chart-line"></i> Harga Dasar Aktif</h6>
+                                <small>Region: Kota Prabumulih, Sumatera Selatan</small>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="bg-light bg-opacity-25 p-3 rounded mb-3">
+                                            <small class="text-light">Harga per m² Tanah</small>
+                                            <div class="h5 fw-bold">Rp {{ "{:,.0f}".format(base_prices.get('base_price_per_sqm_land', 500000)) }}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="bg-light bg-opacity-25 p-3 rounded mb-3">
+                                            <small class="text-light">Harga per m² Bangunan</small>
+                                            <div class="h5 fw-bold">Rp {{ "{:,.0f}".format(base_prices.get('base_price_per_sqm_building', 2000000)) }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="bg-light bg-opacity-25 p-2 rounded">
+                                            <small class="text-light">Bonus Kamar Tidur</small>
+                                            <div class="fw-bold">Rp {{ "{:,.0f}".format(base_prices.get('room_multiplier', 50000000)) }}</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="bg-light bg-opacity-25 p-2 rounded">
+                                            <small class="text-light">Bonus Kamar Mandi</small>
+                                            <div class="fw-bold">Rp {{ "{:,.0f}".format(base_prices.get('bathroom_multiplier', 25000000)) }}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mt-3">
+                                    <small class="text-light">
+                                        <i class="fas fa-map-marker-alt"></i> 
+                                        Berlaku untuk wilayah Prabumulih dan sekitarnya
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Multipliers Display -->
+                        <div class="card bg-dark border-secondary">
+                            <div class="card-header bg-warning text-dark">
+                                <h6 class="mb-0">Pengali Kondisi & Akses</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-3">
+                                    <div class="col-12">
+                                        <small class="text-white fw-bold">Kondisi Bangunan:</small>
+                                        <div class="row mt-2">
+                                            <div class="col-6">
+                                                <small class="text-muted">Baru: {{ base_prices.get('condition_multipliers', {}).get('baru', 1.3) }}x</small><br>
+                                                <small class="text-muted">Baik: {{ base_prices.get('condition_multipliers', {}).get('baik', 1.0) }}x</small>
+                                            </div>
+                                            <div class="col-6">
+                                                <small class="text-muted">Renovasi Ringan: {{ base_prices.get('condition_multipliers', {}).get('renovasi_ringan', 0.8) }}x</small><br>
+                                                <small class="text-muted">Butuh Renovasi: {{ base_prices.get('condition_multipliers', {}).get('butuh_renovasi', 0.6) }}x</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-6">
+                                        <small class="text-white fw-bold">Jenis Jalan:</small>
+                                        <div class="mt-1">
+                                            <small class="text-muted">Jalan Besar: {{ base_prices.get('road_multipliers', {}).get('jalan_besar', 1.2) }}x</small><br>
+                                            <small class="text-muted">Jalan Sedang: {{ base_prices.get('road_multipliers', {}).get('jalan_sedang', 1.0) }}x</small><br>
+                                            <small class="text-muted">Gang Kecil: {{ base_prices.get('road_multipliers', {}).get('gang_kecil', 0.8) }}x</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <small class="text-white fw-bold">Sertifikat:</small>
+                                        <div class="mt-1">
+                                            <small class="text-muted">SHM: {{ base_prices.get('certificate_multipliers', {}).get('shm', 1.1) }}x</small><br>
+                                            <small class="text-muted">HGB: {{ base_prices.get('certificate_multipliers', {}).get('hgb', 1.0) }}x</small><br>
+                                            <small class="text-muted">Girik: {{ base_prices.get('certificate_multipliers', {}).get('girik', 0.9) }}x</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Update Form -->
+                    <div class="col-md-6">
+                        <div class="card bg-dark border-secondary">
+                            <div class="card-header bg-info text-white">
+                                <h6 class="mb-0"><i class="fas fa-edit"></i> Update Harga Dasar</h6>
+                                <small>Edit harga patokan untuk prediksi yang lebih akurat</small>
+                            </div>
+                            <div class="card-body">
+                                <form id="basePriceForm">
+                                    <div class="mb-3">
+                                        <label class="form-label text-white">Harga per m² Tanah (Rp)</label>
+                                        <input type="number" class="form-control bg-dark text-white border-secondary" 
+                                               id="base_price_per_sqm_land" 
+                                               value="{{ base_prices.get('base_price_per_sqm_land', 500000) }}" 
+                                               placeholder="{{ base_prices.get('base_price_per_sqm_land', 500000) }}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label text-white">Harga per m² Bangunan (Rp)</label>
+                                        <input type="number" class="form-control bg-dark text-white border-secondary" 
+                                               id="base_price_per_sqm_building" 
+                                               value="{{ base_prices.get('base_price_per_sqm_building', 2000000) }}" 
+                                               placeholder="{{ base_prices.get('base_price_per_sqm_building', 2000000) }}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label text-white">Bonus per Kamar Tidur (Rp)</label>
+                                        <input type="number" class="form-control bg-dark text-white border-secondary" 
+                                               id="room_multiplier" 
+                                               value="{{ base_prices.get('room_multiplier', 50000000) }}" 
+                                               placeholder="{{ base_prices.get('room_multiplier', 50000000) }}">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label text-white">Bonus per Kamar Mandi (Rp)</label>
+                                        <input type="number" class="form-control bg-dark text-white border-secondary" 
+                                               id="bathroom_multiplier" 
+                                               value="{{ base_prices.get('bathroom_multiplier', 25000000) }}" 
+                                               placeholder="{{ base_prices.get('bathroom_multiplier', 25000000) }}">
+                                    </div>
+
+                                    <h6 class="text-white mt-4 mb-3">Pengali Kondisi Bangunan</h6>
+                                    <div class="row">
+                                        <div class="col-6 mb-3">
+                                            <label class="form-label text-white">Baru</label>
+                                            <input type="number" step="0.1" class="form-control bg-dark text-white border-secondary" 
+                                                   id="condition_baru" 
+                                                   value="{{ base_prices.get('condition_multipliers', {}).get('baru', 1.3) }}" 
+                                                   placeholder="{{ base_prices.get('condition_multipliers', {}).get('baru', 1.3) }}">
+                                        </div>
+                                        <div class="col-6 mb-3">
+                                            <label class="form-label text-white">Baik</label>
+                                            <input type="number" step="0.1" class="form-control bg-dark text-white border-secondary" 
+                                                   id="condition_baik" 
+                                                   value="{{ base_prices.get('condition_multipliers', {}).get('baik', 1.0) }}" 
+                                                   placeholder="{{ base_prices.get('condition_multipliers', {}).get('baik', 1.0) }}">
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-6 mb-3">
+                                            <label class="form-label text-white">Renovasi Ringan</label>
+                                            <input type="number" step="0.1" class="form-control bg-dark text-white border-secondary" 
+                                                   id="condition_renovasi_ringan" 
+                                                   value="{{ base_prices.get('condition_multipliers', {}).get('renovasi_ringan', 0.8) }}" 
+                                                   placeholder="{{ base_prices.get('condition_multipliers', {}).get('renovasi_ringan', 0.8) }}">
+                                        </div>
+                                        <div class="col-6 mb-3">
+                                            <label class="form-label text-white">Butuh Renovasi</label>
+                                            <input type="number" step="0.1" class="form-control bg-dark text-white border-secondary" 
+                                                   id="condition_butuh_renovasi" 
+                                                   value="{{ base_prices.get('condition_multipliers', {}).get('butuh_renovasi', 0.6) }}" 
+                                                   placeholder="{{ base_prices.get('condition_multipliers', {}).get('butuh_renovasi', 0.6) }}">
+                                        </div>
+                                    </div>
+
+                                    <h6 class="text-white mt-4 mb-3">Pengali Jalan & Sertifikat</h6>
+                                    <div class="row">
+                                        <div class="col-4 mb-3">
+                                            <label class="form-label text-white">Jalan Besar</label>
+                                            <input type="number" step="0.1" class="form-control bg-dark text-white border-secondary" 
+                                                   id="road_jalan_besar" 
+                                                   value="{{ base_prices.get('road_multipliers', {}).get('jalan_besar', 1.2) }}" 
+                                                   placeholder="{{ base_prices.get('road_multipliers', {}).get('jalan_besar', 1.2) }}">
+                                        </div>
+                                        <div class="col-4 mb-3">
+                                            <label class="form-label text-white">Jalan Sedang</label>
+                                            <input type="number" step="0.1" class="form-control bg-dark text-white border-secondary" 
+                                                   id="road_jalan_sedang" 
+                                                   value="{{ base_prices.get('road_multipliers', {}).get('jalan_sedang', 1.0) }}" 
+                                                   placeholder="{{ base_prices.get('road_multipliers', {}).get('jalan_sedang', 1.0) }}">
+                                        </div>
+                                        <div class="col-4 mb-3">
+                                            <label class="form-label text-white">Gang Kecil</label>
+                                            <input type="number" step="0.1" class="form-control bg-dark text-white border-secondary" 
+                                                   id="road_gang_kecil" 
+                                                   value="{{ base_prices.get('road_multipliers', {}).get('gang_kecil', 0.8) }}" 
+                                                   placeholder="{{ base_prices.get('road_multipliers', {}).get('gang_kecil', 0.8) }}">
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-4 mb-3">
+                                            <label class="form-label text-white">SHM</label>
+                                            <input type="number" step="0.1" class="form-control bg-dark text-white border-secondary" 
+                                                   id="cert_shm" 
+                                                   value="{{ base_prices.get('certificate_multipliers', {}).get('shm', 1.1) }}" 
+                                                   placeholder="{{ base_prices.get('certificate_multipliers', {}).get('shm', 1.1) }}">
+                                        </div>
+                                        <div class="col-4 mb-3">
+                                            <label class="form-label text-white">HGB</label>
+                                            <input type="number" step="0.1" class="form-control bg-dark text-white border-secondary" 
+                                                   id="cert_hgb" 
+                                                   value="{{ base_prices.get('certificate_multipliers', {}).get('hgb', 1.0) }}" 
+                                                   placeholder="{{ base_prices.get('certificate_multipliers', {}).get('hgb', 1.0) }}">
+                                        </div>
+                                        <div class="col-4 mb-3">
+                                            <label class="form-label text-white">Girik</label>
+                                            <input type="number" step="0.1" class="form-control bg-dark text-white border-secondary" 
+                                                   id="cert_girik" 
+                                                   value="{{ base_prices.get('certificate_multipliers', {}).get('girik', 0.9) }}" 
+                                                   placeholder="{{ base_prices.get('certificate_multipliers', {}).get('girik', 0.9) }}">
+                                        </div>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-success w-100">
+                                        <i class="fas fa-save"></i> Update Harga Dasar
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+
+
+<!-- Activity Log -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card bg-dark border-secondary">
+            <div class="card-header bg-secondary text-white">
+                <h6 class="mb-0"><i class="fas fa-history"></i> Log Aktivitas Base Price</h6>
+            </div>
+            <div class="card-body">
+                <div id="activityLog" class="text-center text-muted">
+                    <small>Belum ada aktivitas update harga</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Base Price Form Handler
+document.getElementById('basePriceForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const formData = {
+        base_price_per_sqm_land: parseInt(document.getElementById('base_price_per_sqm_land').value),
+        base_price_per_sqm_building: parseInt(document.getElementById('base_price_per_sqm_building').value),
+        room_multiplier: parseInt(document.getElementById('room_multiplier').value),
+        bathroom_multiplier: parseInt(document.getElementById('bathroom_multiplier').value),
+        condition_baru: parseFloat(document.getElementById('condition_baru').value),
+        condition_baik: parseFloat(document.getElementById('condition_baik').value),
+        condition_renovasi_ringan: parseFloat(document.getElementById('condition_renovasi_ringan').value),
+        condition_butuh_renovasi: parseFloat(document.getElementById('condition_butuh_renovasi').value),
+        road_jalan_besar: parseFloat(document.getElementById('road_jalan_besar').value),
+        road_jalan_sedang: parseFloat(document.getElementById('road_jalan_sedang').value),
+        road_gang_kecil: parseFloat(document.getElementById('road_gang_kecil').value),
+        cert_shm: parseFloat(document.getElementById('cert_shm').value),
+        cert_hgb: parseFloat(document.getElementById('cert_hgb').value),
+        cert_girik: parseFloat(document.getElementById('cert_girik').value)
+    };
+    
+    try {
+        const response = await fetch('/admin/update_base_prices', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(formData)
+        });
+        
+        const result = await response.json();
+        if (result.success) {
+            // Add to activity log
+            addToActivityLog('Harga dasar berhasil diperbarui');
+            
+            // Show success message
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-success alert-dismissible fade show';
+            alertDiv.innerHTML = `
+                <i class="fas fa-check-circle"></i> Base prices berhasil diperbarui!
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            document.querySelector('.card-body').prepend(alertDiv);
+            
+            // Refresh page after 2 seconds to show updated values
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
+        } else {
+            throw new Error(result.error || 'Gagal memperbarui harga dasar');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-danger alert-dismissible fade show';
+        alertDiv.innerHTML = `
+            <i class="fas fa-exclamation-circle"></i> Error: ${error.message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        `;
+        document.querySelector('.card-body').prepend(alertDiv);
+    }
+});
+
+
+
+function addToActivityLog(message) {
+    const logDiv = document.getElementById('activityLog');
+    const currentTime = new Date().toLocaleString();
+    
+    if (logDiv.textContent.includes('Belum ada aktivitas')) {
+        logDiv.innerHTML = '';
+    }
+    
+    const entry = document.createElement('div');
+    entry.className = 'border-bottom pb-2 mb-2 text-start';
+    entry.innerHTML = `
+        <div class="d-flex justify-content-between">
+            <span class="text-white">${message}</span>
+            <small class="text-muted">${currentTime}</small>
+        </div>
+    `;
+    
+    logDiv.prepend(entry);
+    
+    // Keep only last 5 entries
+    while (logDiv.children.length > 5) {
+        logDiv.removeChild(logDiv.lastChild);
+    }
+}
+
+
+</script>
+{% endblock %}

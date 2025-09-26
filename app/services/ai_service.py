@@ -1,16 +1,24 @@
 import json
 import re
+import os
 from typing import List, Dict, Optional, Tuple
+from dotenv import load_dotenv
 from app.models import PropertyRepository
 from app.utils.search_utils import extract_search_criteria, filter_properties_strict
 
+# Load environment variables
+load_dotenv()
+
 # Import Gemini AI integration
 try:
-    import os
     from google import genai
     from google.genai import types
-    client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
-    GEMINI_AVAILABLE = True
+    api_key = os.getenv("GEMINI_API_KEY")
+    if api_key and api_key != "your_gemini_api_key_here":
+        client = genai.Client(api_key=api_key)
+        GEMINI_AVAILABLE = True
+    else:
+        raise ValueError("GEMINI_API_KEY not found or not configured")
 except Exception as e:
     print(f"Gemini AI not available: {e}")
     GEMINI_AVAILABLE = False

@@ -6,7 +6,16 @@ This is a Flask-based web application that provides real estate price recommenda
 
 ## Recent Development - September 26, 2025
 
-✅ **Replit Environment Setup Complete**
+✅ **Seller Information & WhatsApp Integration Complete**
+- Added seller fields (nama_penjual, nomor_penjual) to property model and admin forms
+- Enhanced property detail page with seller information display and WhatsApp contact button
+- Removed favorite button and replaced with intelligent WhatsApp link generation
+- Fixed admin panel JavaScript errors and improved section navigation
+- Enhanced NLP search to understand various property query formats
+- Updated existing property data with default seller information for testing
+- Fixed admin predictions page styling to match dark theme
+
+✅ **Previous Setup Complete**
 - Successfully imported Flask Real Estate application from GitHub
 - Fixed Gemini AI integration to use correct google-genai SDK imports 
 - Configured proper workflow with webview output on port 5000

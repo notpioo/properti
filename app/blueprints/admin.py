@@ -54,6 +54,8 @@ def add_property():
             'jenis_jalan': request.form.get('jenis_jalan'),
             'kondisi': request.form.get('kondisi'),
             'sertifikat': request.form.get('sertifikat'),
+            'nama_penjual': request.form.get('nama_penjual', ''),
+            'nomor_penjual': request.form.get('nomor_penjual', ''),
             'image': image_filename,
             'created_at': datetime.now().isoformat(),
             'status': 'available'
@@ -120,6 +122,8 @@ def update_property(property_id):
             'jenis_jalan': request.form.get('jenis_jalan'),
             'kondisi': request.form.get('kondisi'),
             'sertifikat': request.form.get('sertifikat'),
+            'nama_penjual': request.form.get('nama_penjual', ''),
+            'nomor_penjual': request.form.get('nomor_penjual', ''),
             'image': image_filename,
             'status': request.form.get('status', 'available')
         }
@@ -178,14 +182,14 @@ def update_base_prices():
                 'butuh_renovasi': float(data.get('condition_butuh_renovasi', 0.6))
             },
             'road_multipliers': {
-                'jalan_besar': 1.2,
-                'jalan_sedang': 1.0,
-                'gang_kecil': 0.8
+                'jalan_besar': float(data.get('road_jalan_besar', 1.2)),
+                'jalan_sedang': float(data.get('road_jalan_sedang', 1.0)),
+                'gang_kecil': float(data.get('road_gang_kecil', 0.8))
             },
             'certificate_multipliers': {
-                'shm': 1.1,
-                'hgb': 1.0,
-                'girik': 0.9
+                'shm': float(data.get('cert_shm', 1.1)),
+                'hgb': float(data.get('cert_hgb', 1.0)),
+                'girik': float(data.get('cert_girik', 0.9))
             }
         }
 
@@ -198,3 +202,17 @@ def update_base_prices():
 
     except Exception as e:
         return {'success': False, 'error': str(e)}
+
+@admin_bp.route('/predictions')
+def predictions():
+    """Admin predictions page with base price settings"""
+    try:
+        base_prices = BasePriceRepository.load_base_prices()
+    except:
+        base_prices = {}
+    return render_template('admin/predictions.html', base_prices=base_prices)
+
+@admin_bp.route('/settings')
+def settings():
+    """Admin settings page"""
+    return render_template('admin/settings.html')

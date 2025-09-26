@@ -11,9 +11,8 @@ def create_app():
     app = Flask(__name__, 
                 template_folder='../templates',
                 static_folder='../static')
-    app.secret_key = os.environ.get('SESSION_SECRET')
-    if not app.secret_key:
-        raise ValueError("SESSION_SECRET environment variable is required")
+    from app.config import Config
+    app.secret_key = Config.SECRET_KEY
     
     # Configure ProxyFix for Replit environment
     app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)
