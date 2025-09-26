@@ -63,7 +63,7 @@
                     {% endif %}
                 </div>
                 <div class="card-footer bg-transparent">
-                    <a href="{{ url_for('property_detail', property_id=property.id) }}" class="btn btn-primary w-100">Lihat Detail</a>
+                    <a href="{{ url_for('main.property_detail', property_id=property.id) }}" class="btn btn-primary w-100">Lihat Detail</a>
                 </div>
             </div>
         </div>
@@ -75,7 +75,7 @@
         <i class="fas fa-home fa-5x text-muted mb-3"></i>
         <h4>Belum ada properti</h4>
         <p>Silakan tambah properti melalui admin panel</p>
-        <a href="{{ url_for('admin') }}" class="btn btn-primary">Admin Panel</a>
+        <a href="{{ url_for('admin.admin_panel') }}" class="btn btn-primary">Admin Panel</a>
     </div>
     {% endif %}
 </div>

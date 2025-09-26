@@ -1,0 +1,317 @@
+
+<div class="content-section" id="properties">
+    <div class="content-header">
+        <h2>Manajemen Properti</h2>
+        <p class="text-muted">Tambah dan kelola properti</p>
+    </div>
+
+    <!-- Add Property Form -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Tambah Properti Baru</h5>
+        </div>
+        <div class="card-body">
+            <form action="{{ url_for('admin.add_property') }}" method="POST" enctype="multipart/form-data">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Luas Tanah (m²)</label>
+                        <input type="number" class="form-control" name="luas_tanah" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Luas Bangunan (m²)</label>
+                        <input type="number" class="form-control" name="luas_bangunan" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Kamar Tidur</label>
+                        <input type="number" class="form-control" name="kamar_tidur" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Kamar Mandi</label>
+                        <input type="number" class="form-control" name="kamar_mandi" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Carport/Garasi</label>
+                        <input type="number" class="form-control" name="carport" value="0">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Tahun Dibangun</label>
+                        <input type="number" class="form-control" name="tahun_dibangun" value="2020">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Alamat</label>
+                    <textarea class="form-control" name="alamat" rows="3" required></textarea>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Harga (Rp)</label>
+                        <input type="number" class="form-control" name="harga">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Gambar Properti</label>
+                        <input type="file" class="form-control" name="image" accept="image/*">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Latitude</label>
+                        <input type="number" step="any" class="form-control" name="latitude" placeholder="-6.2088">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Longitude</label>
+                        <input type="number" step="any" class="form-control" name="longitude" placeholder="106.8456">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Jarak ke Sekolah (meter)</label>
+                        <input type="number" class="form-control" name="jarak_sekolah" value="1000">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Jarak ke Rumah Sakit (meter)</label>
+                        <input type="number" class="form-control" name="jarak_rs" value="2000">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Jarak ke Pasar (meter)</label>
+                        <input type="number" class="form-control" name="jarak_pasar" value="1500">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Jenis Jalan</label>
+                        <select class="form-select" name="jenis_jalan">
+                            <option value="gang_kecil">Gang Kecil</option>
+                            <option value="jalan_sedang">Jalan Sedang</option>
+                            <option value="jalan_besar">Jalan Besar</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Kondisi</label>
+                        <select class="form-select" name="kondisi">
+                            <option value="baru">Baru</option>
+                            <option value="baik">Baik</option>
+                            <option value="renovasi_ringan">Renovasi Ringan</option>
+                            <option value="butuh_renovasi">Butuh Renovasi</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">Sertifikat</label>
+                        <select class="form-select" name="sertifikat">
+                            <option value="SHM">SHM</option>
+                            <option value="HGB">HGB</option>
+                            <option value="lainnya">Lainnya</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success">Tambah Properti</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Properties List -->
+    <div class="card">
+        <div class="card-header">
+            <h5>Daftar Properti ({{ properties|length }})</h5>
+        </div>
+        <div class="card-body">
+            {% if properties %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Alamat</th>
+                            <th>Luas</th>
+                            <th>Kamar</th>
+                            <th>Harga</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for property in properties %}
+                        <tr>
+                            <td>{{ property.alamat }}</td>
+                            <td>{{ property.luas_tanah }}/{{ property.luas_bangunan }}m²</td>
+                            <td>{{ property.kamar_tidur }}/{{ property.kamar_mandi }}</td>
+                            <td>{% if property.harga %}Rp {{ "{:,.0f}".format(property.harga) }}{% endif %}</td>
+                            <td><span class="badge bg-success">{{ property.status|default('available') }}</span></td>
+                            <td>
+                                <a href="{{ url_for('main.property_detail', property_id=property.id) }}" class="btn btn-sm btn-primary">Lihat</a>
+                                <a href="{{ url_for('admin.delete_property', property_id=property.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('Yakin hapus?')">Hapus</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted">Belum ada properti yang ditambahkan.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% extends "admin/base.html" %}
+
+{% block title %}Properti - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="content-section active" id="properties">
+    <div class="content-header">
+        <h2>Manajemen Properti</h2>
+        <p class="text-muted">Tambah dan kelola properti</p>
+    </div>
+
+    <!-- Add Property Form -->
+    <div class="card mb-4" style="background-color: #2d2d2d; border: 1px solid #495057;">
+        <div class="card-header" style="background-color: #343a40; border-bottom: 1px solid #495057;">
+            <h5 class="text-white">Tambah Properti Baru</h5>
+        </div>
+        <div class="card-body">
+            <form action="{{ url_for('admin.add_property') }}" method="POST" enctype="multipart/form-data">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-light">Luas Tanah (m²)</label>
+                        <input type="number" class="form-control bg-dark text-light border-secondary" name="luas_tanah" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-light">Luas Bangunan (m²)</label>
+                        <input type="number" class="form-control bg-dark text-light border-secondary" name="luas_bangunan" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-light">Kamar Tidur</label>
+                        <input type="number" class="form-control bg-dark text-light border-secondary" name="kamar_tidur" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-light">Kamar Mandi</label>
+                        <input type="number" class="form-control bg-dark text-light border-secondary" name="kamar_mandi" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-light">Carport/Garasi</label>
+                        <input type="number" class="form-control bg-dark text-light border-secondary" name="carport" value="0">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-light">Tahun Dibangun</label>
+                        <input type="number" class="form-control bg-dark text-light border-secondary" name="tahun_dibangun" value="2020">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label text-light">Alamat</label>
+                    <textarea class="form-control bg-dark text-light border-secondary" name="alamat" rows="3" required></textarea>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-light">Harga (Rp)</label>
+                        <input type="number" class="form-control bg-dark text-light border-secondary" name="harga">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-light">Gambar Properti</label>
+                        <input type="file" class="form-control bg-dark text-light border-secondary" name="image" accept="image/*">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-light">Latitude</label>
+                        <input type="number" step="any" class="form-control bg-dark text-light border-secondary" name="latitude" placeholder="-6.2088">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-light">Longitude</label>
+                        <input type="number" step="any" class="form-control bg-dark text-light border-secondary" name="longitude" placeholder="106.8456">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label text-light">Jarak ke Sekolah (meter)</label>
+                        <input type="number" class="form-control bg-dark text-light border-secondary" name="jarak_sekolah" value="1000">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label text-light">Jarak ke Rumah Sakit (meter)</label>
+                        <input type="number" class="form-control bg-dark text-light border-secondary" name="jarak_rs" value="2000">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label text-light">Jarak ke Pasar (meter)</label>
+                        <input type="number" class="form-control bg-dark text-light border-secondary" name="jarak_pasar" value="1500">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label text-light">Jenis Jalan</label>
+                        <select class="form-select bg-dark text-light border-secondary" name="jenis_jalan">
+                            <option value="gang_kecil">Gang Kecil</option>
+                            <option value="jalan_sedang">Jalan Sedang</option>
+                            <option value="jalan_besar">Jalan Besar</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label text-light">Kondisi</label>
+                        <select class="form-select bg-dark text-light border-secondary" name="kondisi">
+                            <option value="baru">Baru</option>
+                            <option value="baik">Baik</option>
+                            <option value="renovasi_ringan">Renovasi Ringan</option>
+                            <option value="butuh_renovasi">Butuh Renovasi</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label text-light">Sertifikat</label>
+                        <select class="form-select bg-dark text-light border-secondary" name="sertifikat">
+                            <option value="SHM">SHM</option>
+                            <option value="HGB">HGB</option>
+                            <option value="lainnya">Lainnya</option>
+                        </select>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-success">Tambah Properti</button>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Properties List -->
+    <div class="card" style="background-color: #2d2d2d; border: 1px solid #495057;">
+        <div class="card-header" style="background-color: #343a40; border-bottom: 1px solid #495057;">
+            <h5 class="text-white">Daftar Properti ({{ properties|length }})</h5>
+        </div>
+        <div class="card-body">
+            {% if properties %}
+            <div class="table-responsive">
+                <table class="table table-dark table-striped">
+                    <thead>
+                        <tr>
+                            <th>Alamat</th>
+                            <th>Luas</th>
+                            <th>Kamar</th>
+                            <th>Harga</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for property in properties %}
+                        <tr>
+                            <td>{{ property.alamat }}</td>
+                            <td>{{ property.luas_tanah }}/{{ property.luas_bangunan }}m²</td>
+                            <td>{{ property.kamar_tidur }}/{{ property.kamar_mandi }}</td>
+                            <td>{% if property.harga %}Rp {{ "{:,.0f}".format(property.harga) }}{% endif %}</td>
+                            <td><span class="badge bg-success">{{ property.status|default('available') }}</span></td>
+                            <td>
+                                <a href="{{ url_for('main.property_detail', property_id=property.id) }}" class="btn btn-sm btn-primary">Lihat</a>
+                                <a href="{{ url_for('admin.delete_property', property_id=property.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('Yakin hapus?')">Hapus</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted">Belum ada properti yang ditambahkan.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

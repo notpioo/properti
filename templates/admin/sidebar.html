@@ -1,0 +1,40 @@
+<nav class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+        <div class="sidebar-brand">
+            <i class="fas fa-home me-2"></i>
+            <span class="sidebar-title">PropertyAI</span>
+        </div>
+        <button class="sidebar-toggle" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+
+    <div class="sidebar-menu">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('admin.admin_panel') }}">
+                    <i class="fas fa-chart-line"></i>
+                    <span class="nav-text">Dashboard</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active" href="{{ url_for('admin.properties') }}">
+                    <i class="fas fa-home"></i>
+                    <span class="nav-text">Properti</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#predictions" onclick="showSection('predictions')">
+                    <i class="fas fa-calculator"></i>
+                    <span class="nav-text">Prediksi Harga</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#settings" onclick="showSection('settings')">
+                    <i class="fas fa-cog"></i>
+                    <span class="nav-text">Settings</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</nav>

@@ -149,7 +149,7 @@
     <!-- Navigation -->
     <nav class="navbar navbar-expand-lg navbar-dark py-3" style="background-color: #343a40;">
         <div class="container">
-            <a class="navbar-brand fs-4 fw-bold" href="{{ url_for('index') }}">
+            <a class="navbar-brand fs-4 fw-bold" href="{{ url_for('main.index') }}">
                 <i class="fas fa-home me-2"></i> PropertyAI
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -158,16 +158,16 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav me-auto">
                     <li class="nav-item">
-                        <a class="nav-link fs-5 px-3" href="{{ url_for('index') }}">Beranda</a>
+                        <a class="nav-link fs-5 px-3" href="{{ url_for('main.index') }}">Beranda</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link fs-5 px-3" href="{{ url_for('properties') }}">Properti</a>
+                        <a class="nav-link fs-5 px-3" href="{{ url_for('main.properties') }}">Properti</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link fs-5 px-3" href="{{ url_for('price_prediction') }}">Prediksi Harga</a>
+                        <a class="nav-link fs-5 px-3" href="{{ url_for('main.price_prediction') }}">Prediksi Harga</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link fs-5 px-3" href="{{ url_for('chat') }}">Chat AI</a>
+                        <a class="nav-link fs-5 px-3" href="{{ url_for('main.chat') }}">Chat AI</a>
                     </li>
                 </ul>
             </div>

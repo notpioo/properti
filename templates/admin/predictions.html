@@ -1,0 +1,42 @@
+
+<div class="content-section" id="predictions">
+    <div class="content-header">
+        <h2>Test Prediksi Harga</h2>
+        <p class="text-muted">Test model machine learning</p>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <form id="testPredictForm">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Luas Tanah (m²)</label>
+                        <input type="number" class="form-control" id="test_luas_tanah" value="100">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Luas Bangunan (m²)</label>
+                        <input type="number" class="form-control" id="test_luas_bangunan" value="80">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Kamar Tidur</label>
+                        <input type="number" class="form-control" id="test_kamar_tidur" value="3">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Kamar Mandi</label>
+                        <input type="number" class="form-control" id="test_kamar_mandi" value="2">
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Test Prediksi</button>
+            </form>
+
+            <div id="testPredictResult" class="mt-4" style="display: none;">
+                <div class="alert alert-success">
+                    <h5>Hasil Prediksi:</h5>
+                    <h3 class="text-success" id="testPredictPrice"></h3>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

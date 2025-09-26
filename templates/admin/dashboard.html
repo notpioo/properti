@@ -1,0 +1,119 @@
+
+{% extends "admin/base.html" %}
+
+{% block title %}Dashboard - Admin Panel{% endblock %}
+
+{% block content %}
+<div class="content-section active" id="dashboard">
+    <div class="content-header">
+        <h2>Dashboard</h2>
+        <p class="text-muted">Overview sistem properti</p>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="stat-card">
+                <div class="stat-icon bg-primary">
+                    <i class="fas fa-home"></i>
+                </div>
+                <div class="stat-details">
+                    <h4>{{ properties|length }}</h4>
+                    <p>Total Properti</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="stat-card">
+                <div class="stat-icon bg-success">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="stat-details">
+                    <h4>{% set sold_count = properties|selectattr('status', 'equalto', 'sold')|list|length %}{{ sold_count }}</h4>
+                    <p>Properti Terjual</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="stat-card">
+                <div class="stat-icon bg-warning">
+                    <i class="fas fa-clock"></i>
+                </div>
+                <div class="stat-details">
+                    <h4>{% set pending_count = properties|selectattr('status', 'equalto', 'pending')|list|length %}{{ pending_count }}</h4>
+                    <p>Pending</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6 mb-4">
+            <div class="stat-card">
+                <div class="stat-icon bg-info">
+                    <i class="fas fa-dollar-sign"></i>
+                </div>
+                <div class="stat-details">
+                    <h4>{% set avg_price = (properties|selectattr('harga')|map(attribute='harga')|sum / (properties|selectattr('harga')|list|length) if properties|selectattr('harga')|list|length > 0 else 0) %}
+                        {% if avg_price > 0 %}{{ "{:,.0f}".format(avg_price / 1000000) }}M{% else %}0{% endif %}</h4>
+                    <p>Rata-rata Harga</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card" style="background-color: #2d2d2d; border: 1px solid #495057;">
+                <div class="card-header" style="background-color: #343a40; border-bottom: 1px solid #495057;">
+                    <h5 class="text-white">Properti Terbaru</h5>
+                </div>
+                <div class="card-body">
+                    {% if properties %}
+                    <div class="table-responsive">
+                        <table class="table table-dark table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Alamat</th>
+                                    <th>Harga</th>
+                                    <th>Status</th>
+                                    <th>Tanggal</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for property in properties[:5] %}
+                                <tr>
+                                    <td>{{ property.alamat|truncate(30) }}</td>
+                                    <td>{% if property.harga %}Rp {{ "{:,.0f}".format(property.harga) }}{% else %}-{% endif %}</td>
+                                    <td><span class="badge bg-success">{{ property.status|default('available') }}</span></td>
+                                    <td>{{ property.created_at|default('') }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <p class="text-muted">Belum ada properti.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Quick Actions</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary" onclick="showSection('properties')">
+                            <i class="fas fa-plus"></i> Tambah Properti
+                        </button>
+                        <button class="btn btn-info" onclick="showSection('predictions')">
+                            <i class="fas fa-calculator"></i> Test Prediksi
+                        </button>
+                        <button class="btn btn-secondary" onclick="showSection('settings')">
+                            <i class="fas fa-cog"></i> Pengaturan
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

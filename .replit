@@ -5,7 +5,7 @@ integrations = ["python_gemini:1.0.0"]
 
 [nix]
 channel = "stable-25_05"
-packages = ["freetype", "glibcLocales", "lcms2", "libimagequant", "libjpeg", "libtiff", "libwebp", "libxcrypt", "openjpeg", "tcl", "tk", "zlib"]
+packages = ["freetype", "glibcLocales", "lcms2", "libimagequant", "libjpeg", "libtiff", "libwebp", "libxcrypt", "openjpeg", "openssl", "postgresql", "tcl", "tk", "zlib"]
 
 [workflows]
 runButton = "Project"
@@ -17,20 +17,24 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "Flask Server"
+args = "Real Estate App"
 
 [[workflows.workflow]]
-name = "Flask Server"
+name = "Real Estate App"
 author = "agent"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "python app.py"
-waitForPort = 5000
 
 [workflows.workflow.metadata]
 outputType = "webview"
 
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "uv run python main.py"
+waitForPort = 5000
+
 [[ports]]
 localPort = 5000
 externalPort = 80
+
+[deployment]
+deploymentTarget = "autoscale"
+run = ["gunicorn", "--bind", "0.0.0.0:5000", "--reuse-port", "app:app"]

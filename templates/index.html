@@ -147,14 +147,14 @@
                         {% endif %}
                     </div>
                     <div class="card-footer bg-transparent">
-                        <a href="{{ url_for('property_detail', property_id=property.id) }}" class="btn btn-primary w-100">Lihat Detail</a>
+                        <a href="{{ url_for('main.property_detail', property_id=property.id) }}" class="btn btn-primary w-100">Lihat Detail</a>
                     </div>
                 </div>
             </div>
             {% endfor %}
         </div>
         <div class="text-center">
-            <a href="{{ url_for('properties') }}" class="btn btn-outline-primary btn-lg">Lihat Semua Properti</a>
+            <a href="{{ url_for('main.properties') }}" class="btn btn-outline-primary btn-lg">Lihat Semua Properti</a>
         </div>
     </div>
 </section>
@@ -254,79 +254,40 @@ document.getElementById('predictForm').addEventListener('submit', function(e) {
     });
 });
 
-// Load properties from database
+// Load properties using AI-powered search
 function loadPropertiesFromDatabase(query) {
-    fetch('/api/properties')
+    fetch('/api/search_properties', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ query: query })
+    })
     .then(response => response.json())
-    .then(properties => {
+    .then(data => {
         document.getElementById('searchLoading').style.display = 'none';
 
         const container = document.getElementById('propertyCards');
         container.innerHTML = '';
 
-        // Filter properties based on query (intelligent matching)
-        let filteredProperties = properties;
-        if (query) {
-            const queryLower = query.toLowerCase();
+        const properties = data.properties || [];
+        const explanation = data.explanation || '';
+        const aiPowered = data.ai_powered || false;
 
-            // Extract budget from query
-            let budgetMatch = null;
-            const budgetRegex = /(\d+)\s*juta/gi;
-            const matches = queryLower.match(budgetRegex);
-            if (matches) {
-                const budgetStr = matches[0].replace(/[^\d]/g, '');
-                const budget = parseInt(budgetStr) * 1000000; // Convert juta to rupiah
-                budgetMatch = budget;
-            }
-
-            // Extract number of rooms from query
-            let roomsMatch = null;
-            const roomsRegex = /(\d+)\s*kamar/gi;
-            const roomMatches = queryLower.match(roomsRegex);
-            if (roomMatches) {
-                const roomsStr = roomMatches[0].replace(/[^\d]/g, '');
-                roomsMatch = parseInt(roomsStr);
-            }
-
-            filteredProperties = properties.filter(property => {
-                let matches = true;
-
-                // Budget filtering (within 20% tolerance)
-                if (budgetMatch && property.harga) {
-                    const tolerance = budgetMatch * 0.2; // 20% tolerance
-                    const minPrice = budgetMatch - tolerance;
-                    const maxPrice = budgetMatch + tolerance;
-                    matches = matches && (property.harga >= minPrice && property.harga <= maxPrice);
-                }
-
-                // Rooms filtering
-                if (roomsMatch) {
-                    matches = matches && (property.kamar_tidur >= roomsMatch);
-                }
-
-                // Location/address filtering
-                if (queryLower.includes('sekolah') || queryLower.includes('dekat sekolah')) {
-                    matches = matches && (property.jarak_sekolah <= 1000);
-                }
-
-                return matches;
-            });
-
-            // If no specific filters found, do general text search
-            if (!budgetMatch && !roomsMatch && !queryLower.includes('sekolah')) {
-                filteredProperties = properties.filter(property => {
-                    return property.alamat && property.alamat.toLowerCase().includes(queryLower);
-                });
-            }
+        // Show AI explanation if available
+        if (explanation && aiPowered) {
+            const explanationDiv = document.createElement('div');
+            explanationDiv.className = 'alert alert-info mb-3';
+            explanationDiv.innerHTML = `
+                <i class="fas fa-robot"></i> <strong>AI Analysis:</strong> ${explanation}
+            `;
+            container.appendChild(explanationDiv);
         }
 
-        // Show first 5 properties
-        const displayProperties = filteredProperties.slice(0, 5);
-
-        if (displayProperties.length === 0) {
-            container.innerHTML = '<p class="text-white text-center">Tidak ada properti yang ditemukan untuk pencarian Anda.</p>';
+        if (properties.length === 0) {
+            container.innerHTML += '<p class="text-white text-center">Tidak ada properti yang ditemukan untuk pencarian Anda.</p>';
         } else {
-            displayProperties.forEach(property => {
+            properties.forEach(property => {
                 const card = document.createElement('div');
                 card.className = 'mb-3';
                 card.innerHTML = `
