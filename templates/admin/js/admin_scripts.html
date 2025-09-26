@@ -252,4 +252,93 @@ document.getElementById('testPredictForm').addEventListener('submit', function(e
         console.error('Error:', error);
     });
 });
+
+// Base Price Management
+document.getElementById('loadCurrentSettings').addEventListener('click', function() {
+    fetch('/admin/get_base_prices')
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const prices = data.data;
+            document.getElementById('base_price_per_sqm_land').value = prices.base_price_per_sqm_land.toLocaleString();
+            document.getElementById('base_price_per_sqm_building').value = prices.base_price_per_sqm_building.toLocaleString();
+            document.getElementById('room_multiplier').value = prices.room_multiplier.toLocaleString();
+            document.getElementById('bathroom_multiplier').value = prices.bathroom_multiplier.toLocaleString();
+            
+            document.getElementById('condition_baru').value = prices.condition_multipliers.baru;
+            document.getElementById('condition_baik').value = prices.condition_multipliers.baik;
+            document.getElementById('condition_renovasi_ringan').value = prices.condition_multipliers.renovasi_ringan;
+            document.getElementById('condition_butuh_renovasi').value = prices.condition_multipliers.butuh_renovasi;
+        }
+    });
+});
+
+document.getElementById('basePriceForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = {
+        base_price_per_sqm_land: parseFloat(document.getElementById('base_price_per_sqm_land').value.replace(/\./g, '')),
+        base_price_per_sqm_building: parseFloat(document.getElementById('base_price_per_sqm_building').value.replace(/\./g, '')),
+        room_multiplier: parseFloat(document.getElementById('room_multiplier').value.replace(/\./g, '')),
+        bathroom_multiplier: parseFloat(document.getElementById('bathroom_multiplier').value.replace(/\./g, '')),
+        condition_baru: parseFloat(document.getElementById('condition_baru').value),
+        condition_baik: parseFloat(document.getElementById('condition_baik').value),
+        condition_renovasi_ringan: parseFloat(document.getElementById('condition_renovasi_ringan').value),
+        condition_butuh_renovasi: parseFloat(document.getElementById('condition_butuh_renovasi').value)
+    };
+    
+    fetch('/admin/update_base_prices', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Pengaturan harga dasar berhasil disimpan!');
+        } else {
+            alert('Error: ' + data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Terjadi kesalahan saat menyimpan pengaturan.');
+    });
+});
+
+document.getElementById('calculateTest').addEventListener('click', function() {
+    const testData = {
+        luas_tanah: 100,
+        luas_bangunan: 80,
+        kamar_tidur: 3,
+        kamar_mandi: 2,
+        kondisi: 'baik',
+        jenis_jalan: 'jalan_sedang',
+        sertifikat: 'hgb'
+    };
+    
+    fetch('/api/predict', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(testData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.prediction) {
+            document.getElementById('testCalculation').textContent = data.formatted;
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+});
+
+// Auto load current settings on page load
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('loadCurrentSettings').click();
+});
 </script>

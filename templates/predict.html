@@ -3,62 +3,149 @@
 {% block content %}
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <h2 class="text-center mb-4">Prediksi Harga Rumah</h2>
-            <div class="card">
-                <div class="card-body">
-                    <form method="POST">
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Luas Tanah (m²)</label>
-                                <input type="number" class="form-control" name="luas_tanah" required>
+        <div class="col-lg-10">
+            <!-- Header Section -->
+            <div class="text-center mb-5">
+                <h2 class="display-5 fw-bold text-primary">Prediksi Harga Rumah</h2>
+                <p class="lead text-muted">Dapatkan estimasi harga rumah yang akurat dengan teknologi AI</p>
+            </div>
+
+            <div class="row">
+                <!-- Form Section -->
+                <div class="col-lg-7">
+                    <div class="card shadow-lg border-0">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="fas fa-home"></i> Detail Properti</h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <form method="POST" id="predictionForm">
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-semibold">Luas Tanah (m²)</label>
+                                        <input type="number" class="form-control form-control-lg" name="luas_tanah" value="{{ request.form.get('luas_tanah', '') }}" required placeholder="Contoh: 100">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-semibold">Luas Bangunan (m²)</label>
+                                        <input type="number" class="form-control form-control-lg" name="luas_bangunan" value="{{ request.form.get('luas_bangunan', '') }}" required placeholder="Contoh: 80">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-semibold">Kamar Tidur</label>
+                                        <input type="number" class="form-control form-control-lg" name="kamar_tidur" value="{{ request.form.get('kamar_tidur', '') }}" min="1" required placeholder="Contoh: 3">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-semibold">Kamar Mandi</label>
+                                        <input type="number" class="form-control form-control-lg" name="kamar_mandi" value="{{ request.form.get('kamar_mandi', '') }}" min="1" required placeholder="Contoh: 2">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-semibold">Carport</label>
+                                        <input type="number" class="form-control form-control-lg" name="carport" value="{{ request.form.get('carport', '0') }}" min="0" placeholder="Jumlah mobil">
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-semibold">Tahun Dibangun</label>
+                                        <input type="number" class="form-control form-control-lg" name="tahun_dibangun" value="{{ request.form.get('tahun_dibangun', '') }}" min="1900" max="2030" placeholder="Contoh: 2020">
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-semibold">Jenis Jalan</label>
+                                        <select class="form-select form-select-lg" name="jenis_jalan" required>
+                                            <option value="">Pilih jenis jalan</option>
+                                            <option value="gang_kecil" {{ 'selected' if request.form.get('jenis_jalan') == 'gang_kecil' }}>Gang Kecil</option>
+                                            <option value="jalan_sedang" {{ 'selected' if request.form.get('jenis_jalan') == 'jalan_sedang' }}>Jalan Sedang</option>
+                                            <option value="jalan_besar" {{ 'selected' if request.form.get('jenis_jalan') == 'jalan_besar' }}>Jalan Besar</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label fw-semibold">Kondisi Bangunan</label>
+                                        <select class="form-select form-select-lg" name="kondisi" required>
+                                            <option value="">Pilih kondisi</option>
+                                            <option value="baru" {{ 'selected' if request.form.get('kondisi') == 'baru' }}>Baru</option>
+                                            <option value="baik" {{ 'selected' if request.form.get('kondisi') == 'baik' }}>Baik</option>
+                                            <option value="renovasi_ringan" {{ 'selected' if request.form.get('kondisi') == 'renovasi_ringan' }}>Renovasi Ringan</option>
+                                            <option value="butuh_renovasi" {{ 'selected' if request.form.get('kondisi') == 'butuh_renovasi' }}>Butuh Renovasi</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">Sertifikat</label>
+                                    <select class="form-select form-select-lg" name="sertifikat">
+                                        <option value="">Pilih sertifikat</option>
+                                        <option value="shm" {{ 'selected' if request.form.get('sertifikat') == 'shm' }}>SHM (Sertifikat Hak Milik)</option>
+                                        <option value="hgb" {{ 'selected' if request.form.get('sertifikat') == 'hgb' }}>HGB (Hak Guna Bangunan)</option>
+                                        <option value="girik" {{ 'selected' if request.form.get('sertifikat') == 'girik' }}>Girik/Letter C</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="btn btn-primary btn-lg w-100">
+                                    <i class="fas fa-calculator"></i> Prediksi Harga Sekarang
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Result Section -->
+                <div class="col-lg-5">
+                    {% if price_range %}
+                    <div class="card shadow-lg border-0 bg-success text-white">
+                        <div class="card-header">
+                            <h5 class="mb-0"><i class="fas fa-chart-line"></i> Hasil Prediksi</h5>
+                        </div>
+                        <div class="card-body text-center">
+                            <h6 class="text-light">Estimasi Harga Properti</h6>
+                            <h2 class="display-6 fw-bold">{{ price_range.formatted_predicted }}</h2>
+                            
+                            <div class="mt-4">
+                                <div class="row text-center">
+                                    <div class="col-6">
+                                        <div class="bg-light bg-opacity-25 p-3 rounded">
+                                            <h6 class="text-light">Harga Minimum</h6>
+                                            <h5>{{ price_range.formatted_min }}</h5>
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="bg-light bg-opacity-25 p-3 rounded">
+                                            <h6 class="text-light">Harga Maksimum</h6>
+                                            <h5>{{ price_range.formatted_max }}</h5>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Luas Bangunan (m²)</label>
-                                <input type="number" class="form-control" name="luas_bangunan" required>
+                            
+                            <div class="mt-4">
+                                <small class="text-light">
+                                    <i class="fas fa-info-circle"></i> 
+                                    Prediksi menggunakan teknologi AI dan machine learning berdasarkan data pasar terkini
+                                </small>
                             </div>
                         </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Kamar Tidur</label>
-                                <input type="number" class="form-control" name="kamar_tidur" min="1" required>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Kamar Mandi</label>
-                                <input type="number" class="form-control" name="kamar_mandi" min="1" required>
-                            </div>
+                    </div>
+                    {% else %}
+                    <div class="card shadow-lg border-0">
+                        <div class="card-body text-center p-5">
+                            <i class="fas fa-home fa-4x text-muted mb-4"></i>
+                            <h5 class="text-muted">Hasil Prediksi</h5>
+                            <p class="text-muted">Masukkan detail properti di sebelah kiri untuk mendapatkan estimasi harga yang akurat</p>
                         </div>
-                        <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Jenis Jalan</label>
-                                <select class="form-select" name="jenis_jalan" required>
-                                    <option value="">Pilih jenis jalan</option>
-                                    <option value="gang_kecil">Gang Kecil</option>
-                                    <option value="jalan_sedang">Jalan Sedang</option>
-                                    <option value="jalan_besar">Jalan Besar</option>
-                                </select>
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <label class="form-label">Kondisi Bangunan</label>
-                                <select class="form-select" name="kondisi" required>
-                                    <option value="">Pilih kondisi</option>
-                                    <option value="baru">Baru</option>
-                                    <option value="baik">Baik</option>
-                                    <option value="renovasi_ringan">Renovasi Ringan</option>
-                                    <option value="butuh_renovasi">Butuh Renovasi</option>
-                                </select>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-primary w-100">Prediksi Harga</button>
-                    </form>
-                    
-                    {% if prediction %}
-                    <div class="alert alert-success mt-4">
-                        <h5>Hasil Prediksi:</h5>
-                        <h3 class="text-success">{{ prediction }}</h3>
-                        <small class="text-muted">*Prediksi berdasarkan model machine learning dengan data properti yang tersedia</small>
                     </div>
                     {% endif %}
+
+                    <!-- Information Cards -->
+                    <div class="mt-4">
+                        <div class="card border-0 bg-light">
+                            <div class="card-body">
+                                <h6 class="text-primary"><i class="fas fa-lightbulb"></i> Tips Prediksi</h6>
+                                <ul class="small text-muted mb-0">
+                                    <li>Semakin lengkap data yang dimasukkan, semakin akurat prediksi</li>
+                                    <li>Lokasi dan kondisi bangunan sangat mempengaruhi harga</li>
+                                    <li>Prediksi ini adalah estimasi berdasarkan data pasar</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

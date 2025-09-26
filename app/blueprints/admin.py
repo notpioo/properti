@@ -3,7 +3,7 @@ import os
 from datetime import datetime
 from flask import Blueprint, render_template, request, redirect, url_for, flash, current_app
 from werkzeug.utils import secure_filename
-from app.models import PropertyRepository
+from app.models import PropertyRepository, BasePriceRepository # Assuming BasePriceRepository exists
 from app.services.ml_service import ml_service
 
 admin_bp = Blueprint('admin', __name__)
@@ -32,17 +32,19 @@ def add_property():
                 filename = secure_filename(file.filename)
                 image_filename = f"{uuid.uuid4()}_{filename}"
                 file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], image_filename))
-        
+
         # Create property data
         property_data = {
             'id': str(uuid.uuid4()),
+            'judul_properti': request.form.get('judul_properti'),
+            'kelurahan': request.form.get('kelurahan'),
+            'alamat': request.form.get('alamat'),
             'luas_tanah': int(request.form.get('luas_tanah') or 0),
             'luas_bangunan': int(request.form.get('luas_bangunan') or 0),
             'kamar_tidur': int(request.form.get('kamar_tidur') or 2),
             'kamar_mandi': int(request.form.get('kamar_mandi') or 1),
             'carport': int(request.form.get('carport', 0) or 0),
             'tahun_dibangun': int(request.form.get('tahun_dibangun') or 2020),
-            'alamat': request.form.get('alamat'),
             'harga': float(request.form.get('harga') or 0) if request.form.get('harga') else None,
             'latitude': float(request.form.get('latitude') or 0) if request.form.get('latitude') else None,
             'longitude': float(request.form.get('longitude') or 0) if request.form.get('longitude') else None,
@@ -56,19 +58,84 @@ def add_property():
             'created_at': datetime.now().isoformat(),
             'status': 'available'
         }
-        
+
         # Save property
         PropertyRepository.add_property(property_data)
-        
+
         # Retrain ML model with new data
         ml_service.train_model()
-        
+
         flash('Property added successfully!')
-        
+
     except Exception as e:
         flash(f'Error adding property: {str(e)}')
-    
+
     return redirect(url_for('admin.admin_panel'))
+
+@admin_bp.route('/edit_property/<property_id>')
+def edit_property(property_id):
+    """Show edit property form"""
+    property_data = PropertyRepository.get_property_by_id(property_id)
+    if not property_data:
+        flash('Property not found')
+        return redirect(url_for('admin.admin_panel'))
+
+    return render_template('admin/edit_property.html', property=property_data)
+
+@admin_bp.route('/update_property/<property_id>', methods=['POST'])
+def update_property(property_id):
+    """Update existing property"""
+    try:
+        property_data = PropertyRepository.get_property_by_id(property_id)
+        if not property_data:
+            flash('Property not found')
+            return redirect(url_for('admin.admin_panel'))
+
+        # Handle file upload
+        image_filename = property_data.get('image')  # Keep existing image by default
+        if 'image' in request.files:
+            file = request.files['image']
+            if file and file.filename:
+                filename = secure_filename(file.filename)
+                image_filename = f"{uuid.uuid4()}_{filename}"
+                file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], image_filename))
+
+        # Create updated property data
+        updated_data = {
+            'judul_properti': request.form.get('judul_properti'),
+            'kelurahan': request.form.get('kelurahan'),
+            'alamat': request.form.get('alamat'),
+            'luas_tanah': int(request.form.get('luas_tanah') or 0),
+            'luas_bangunan': int(request.form.get('luas_bangunan') or 0),
+            'kamar_tidur': int(request.form.get('kamar_tidur') or 2),
+            'kamar_mandi': int(request.form.get('kamar_mandi') or 1),
+            'carport': int(request.form.get('carport', 0) or 0),
+            'tahun_dibangun': int(request.form.get('tahun_dibangun') or 2020),
+            'harga': float(request.form.get('harga') or 0) if request.form.get('harga') else None,
+            'latitude': float(request.form.get('latitude') or 0) if request.form.get('latitude') else None,
+            'longitude': float(request.form.get('longitude') or 0) if request.form.get('longitude') else None,
+            'jarak_sekolah': float(request.form.get('jarak_sekolah', 1000) or 1000),
+            'jarak_rs': float(request.form.get('jarak_rs', 2000) or 2000),
+            'jarak_pasar': float(request.form.get('jarak_pasar', 1500) or 1500),
+            'jenis_jalan': request.form.get('jenis_jalan'),
+            'kondisi': request.form.get('kondisi'),
+            'sertifikat': request.form.get('sertifikat'),
+            'image': image_filename,
+            'status': request.form.get('status', 'available')
+        }
+
+        # Update property
+        if PropertyRepository.update_property(property_id, updated_data):
+            # Retrain ML model with updated data
+            ml_service.train_model()
+            flash('Property updated successfully!')
+        else:
+            flash('Failed to update property')
+
+    except Exception as e:
+        flash(f'Error updating property: {str(e)}')
+
+    return redirect(url_for('main.property_detail', property_id=property_id))
 
 @admin_bp.route('/delete_property/<property_id>')
 def delete_property(property_id):
@@ -79,5 +146,55 @@ def delete_property(property_id):
         flash('Property deleted successfully!')
     else:
         flash('Property not found')
-    
+
     return redirect(url_for('admin.admin_panel'))
+
+# Add routes for base price management
+@admin_bp.route('/get_base_prices')
+def get_base_prices():
+    """Get current base price settings"""
+    try:
+        base_prices = BasePriceRepository.load_base_prices()
+        return {'success': True, 'data': base_prices}
+    except Exception as e:
+        return {'success': False, 'error': str(e)}
+
+@admin_bp.route('/update_base_prices', methods=['POST'])
+def update_base_prices():
+    """Update base price settings"""
+    try:
+        data = request.get_json()
+
+        # Format the data properly
+        updated_data = {
+            'base_price_per_sqm_land': float(data.get('base_price_per_sqm_land', 500000)),
+            'base_price_per_sqm_building': float(data.get('base_price_per_sqm_building', 2000000)),
+            'room_multiplier': float(data.get('room_multiplier', 50000000)),
+            'bathroom_multiplier': float(data.get('bathroom_multiplier', 25000000)),
+            'condition_multipliers': {
+                'baru': float(data.get('condition_baru', 1.3)),
+                'baik': float(data.get('condition_baik', 1.0)),
+                'renovasi_ringan': float(data.get('condition_renovasi_ringan', 0.8)),
+                'butuh_renovasi': float(data.get('condition_butuh_renovasi', 0.6))
+            },
+            'road_multipliers': {
+                'jalan_besar': 1.2,
+                'jalan_sedang': 1.0,
+                'gang_kecil': 0.8
+            },
+            'certificate_multipliers': {
+                'shm': 1.1,
+                'hgb': 1.0,
+                'girik': 0.9
+            }
+        }
+
+        if BasePriceRepository.save_base_prices(updated_data):
+            # Retrain ML model with new base prices
+            ml_service.train_model()
+            return {'success': True, 'message': 'Base prices updated successfully!'}
+        else:
+            return {'success': False, 'error': 'Failed to update base prices'}
+
+    except Exception as e:
+        return {'success': False, 'error': str(e)}

@@ -6,7 +6,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_absolute_error, r2_score
 import pickle
 from typing import Optional, Dict, Any
-from app.models import PropertyRepository, encode_categorical
+from app.models import PropertyRepository, BasePriceRepository, encode_categorical
 from app.config import Config
 
 class MLPredictionService:
@@ -93,7 +93,26 @@ class MLPredictionService:
             return False
     
     def predict_price(self, property_data: Dict[str, Any]) -> Optional[float]:
-        """Predict house price using ML model"""
+        """Predict house price using hybrid ML + base price model"""
+        # First try ML prediction
+        ml_prediction = self._get_ml_prediction(property_data)
+        
+        # Always calculate base price prediction
+        base_prediction = self._get_base_price_prediction(property_data)
+        
+        # If ML model available, use weighted average
+        if ml_prediction is not None and base_prediction is not None:
+            # 70% ML, 30% base price for balanced prediction
+            final_prediction = (0.7 * ml_prediction) + (0.3 * base_prediction)
+            return max(0, final_prediction)
+        elif base_prediction is not None:
+            # Fallback to base price calculation
+            return base_prediction
+        
+        return ml_prediction
+    
+    def _get_ml_prediction(self, property_data: Dict[str, Any]) -> Optional[float]:
+        """Get ML model prediction"""
         if self.model is None:
             if not self.load_model():
                 return None
@@ -119,12 +138,63 @@ class MLPredictionService:
             try:
                 features_scaled = self.scaler.transform([features])
                 prediction = self.model.predict(features_scaled)[0]
-                return max(0, prediction)  # Ensure non-negative price
+                return max(0, prediction)
             except Exception as e:
                 print(f"Error predicting price: {e}")
                 return None
         
         return None
+    
+    def _get_base_price_prediction(self, property_data: Dict[str, Any]) -> Optional[float]:
+        """Calculate price using base price methodology"""
+        try:
+            base_prices = BasePriceRepository.load_base_prices()
+            
+            # Basic calculation
+            luas_tanah = float(property_data.get('luas_tanah', 100))
+            luas_bangunan = float(property_data.get('luas_bangunan', 80))
+            kamar_tidur = int(property_data.get('kamar_tidur', 2))
+            kamar_mandi = int(property_data.get('kamar_mandi', 1))
+            
+            # Base price calculation
+            land_value = luas_tanah * base_prices['base_price_per_sqm_land']
+            building_value = luas_bangunan * base_prices['base_price_per_sqm_building']
+            room_bonus = kamar_tidur * base_prices['room_multiplier']
+            bathroom_bonus = kamar_mandi * base_prices['bathroom_multiplier']
+            
+            base_total = land_value + building_value + room_bonus + bathroom_bonus
+            
+            # Apply multipliers
+            kondisi = property_data.get('kondisi', 'baik')
+            condition_mult = base_prices['condition_multipliers'].get(kondisi, 1.0)
+            
+            jenis_jalan = property_data.get('jenis_jalan', 'jalan_sedang')
+            road_mult = base_prices['road_multipliers'].get(jenis_jalan, 1.0)
+            
+            sertifikat = property_data.get('sertifikat', 'hgb')
+            cert_mult = base_prices['certificate_multipliers'].get(sertifikat, 1.0)
+            
+            final_price = base_total * condition_mult * road_mult * cert_mult
+            
+            return max(0, final_price)
+            
+        except Exception as e:
+            print(f"Error calculating base price: {e}")
+            return None
+    
+    def get_price_range(self, property_data: Dict[str, Any]) -> Optional[Dict[str, float]]:
+        """Get price range (min, max, predicted)"""
+        predicted_price = self.predict_price(property_data)
+        if predicted_price is None:
+            return None
+        
+        # Calculate range (±20% from predicted)
+        variation = predicted_price * 0.2
+        return {
+            'min_price': max(0, predicted_price - variation),
+            'max_price': predicted_price + variation,
+            'predicted_price': predicted_price
+        }
 
 # Global ML service instance
 ml_service = MLPredictionService()

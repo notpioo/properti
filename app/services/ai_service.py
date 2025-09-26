@@ -6,8 +6,10 @@ from app.utils.search_utils import extract_search_criteria, filter_properties_st
 
 # Import Gemini AI integration
 try:
-    from gemini import client, types
+    import os
     from google import genai
+    from google.genai import types
+    client = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
     GEMINI_AVAILABLE = True
 except Exception as e:
     print(f"Gemini AI not available: {e}")

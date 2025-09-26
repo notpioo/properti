@@ -2,43 +2,124 @@
 
 {% block content %}
 <div class="container py-5">
+    <!-- Property Title Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('main.index') }}" class="text-decoration-none">Beranda</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('main.properties') }}" class="text-decoration-none">Properti</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Detail Properti</li>
+                </ol>
+            </nav>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-lg-8">
-            <div class="card">
+            <!-- Main Property Image -->
+            <div class="card mb-4">
                 {% if property.image %}
-                <img src="{{ url_for('static', filename='images/' + property.image) }}" class="card-img-top" style="height: 400px; object-fit: cover;" alt="Property">
+                <img src="{{ url_for('static', filename='images/' + property.image) }}" class="card-img-top" style="height: 400px; object-fit: cover; border-radius: 8px;" alt="Property">
                 {% else %}
-                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 400px;">
+                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 400px; border-radius: 8px;">
                     <i class="fas fa-home fa-5x text-muted"></i>
                 </div>
                 {% endif %}
-                <div class="card-body">
-                    <h2 class="card-title">{{ property.alamat }}</h2>
-                    {% if property.harga %}
-                    <h3 class="text-primary mb-3">Rp {{ "{:,.0f}".format(property.harga) }}</h3>
-                    {% endif %}
-                    
+            </div>
+
+            <!-- Property Header Info -->
+            <div class="card mb-4">
+                <div class="card-body p-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h2 class="card-title mb-2">{{ property.judul_properti or property.alamat }}</h2>
+                            <div class="d-flex align-items-center text-muted mb-2">
+                                <i class="fas fa-map-marker-alt me-2"></i>
+                                <span><strong>{{ property.kelurahan or 'Kelurahan tidak tersedia' }}</strong></span>
+                            </div>
+                            <p class="text-muted mb-0">{{ property.alamat }}</p>
+                        </div>
+                        <div class="col-md-4 text-md-end text-start mt-3 mt-md-0">
+                            {% if property.harga %}
+                            <h3 class="text-primary mb-1">Rp {{ "{:,.0f}".format(property.harga) }}</h3>
+                            <small class="text-muted">Harga Properti</small>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Property Details -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Detail Properti</h5>
+                </div>
+                <div class="card-body p-4">
                     <div class="row">
-                        <div class="col-md-6">
-                            <h5>Detail Properti</h5>
+                        <div class="col-md-6 mb-4 mb-md-0">
+                            <h6 class="text-muted mb-3">Spesifikasi Bangunan</h6>
                             <ul class="list-unstyled">
-                                <li><i class="fas fa-bed"></i> {{ property.kamar_tidur }} Kamar Tidur</li>
-                                <li><i class="fas fa-bath"></i> {{ property.kamar_mandi }} Kamar Mandi</li>
-                                <li><i class="fas fa-ruler-combined"></i> {{ property.luas_tanah }}m² Luas Tanah</li>
-                                <li><i class="fas fa-home"></i> {{ property.luas_bangunan }}m² Luas Bangunan</li>
-                                <li><i class="fas fa-calendar"></i> Tahun {{ property.tahun_dibangun }}</li>
+                                <li class="mb-2"><i class="fas fa-bed text-primary me-3"></i> {{ property.kamar_tidur }} Kamar Tidur</li>
+                                <li class="mb-2"><i class="fas fa-bath text-info me-3"></i> {{ property.kamar_mandi }} Kamar Mandi</li>
+                                <li class="mb-2"><i class="fas fa-ruler-combined text-success me-3"></i> {{ property.luas_tanah }}m² Luas Tanah</li>
+                                <li class="mb-2"><i class="fas fa-home text-warning me-3"></i> {{ property.luas_bangunan }}m² Luas Bangunan</li>
+                                <li class="mb-2"><i class="fas fa-calendar text-secondary me-3"></i> Tahun {{ property.tahun_dibangun }}</li>
                                 {% if property.carport %}
-                                <li><i class="fas fa-car"></i> {{ property.carport }} Carport</li>
+                                <li class="mb-2"><i class="fas fa-car text-dark me-3"></i> {{ property.carport }} Carport</li>
                                 {% endif %}
                             </ul>
                         </div>
                         <div class="col-md-6">
-                            <h5>Informasi Lokasi</h5>
+                            <h6 class="text-muted mb-3">Informasi Lokasi</h6>
                             <ul class="list-unstyled">
-                                <li><i class="fas fa-road"></i> {{ property.jenis_jalan|replace('_', ' ')|title }}</li>
-                                <li><i class="fas fa-tools"></i> {{ property.kondisi|replace('_', ' ')|title }}</li>
-                                <li><i class="fas fa-certificate"></i> {{ property.sertifikat }}</li>
+                                <li class="mb-2"><i class="fas fa-road text-primary me-3"></i> {{ property.jenis_jalan|replace('_', ' ')|title }}</li>
+                                <li class="mb-2"><i class="fas fa-tools text-info me-3"></i> {{ property.kondisi|replace('_', ' ')|title }}</li>
+                                <li class="mb-2"><i class="fas fa-certificate text-success me-3"></i> {{ property.sertifikat }}</li>
+                                <li class="mb-2">
+                                    <i class="fas fa-info-circle text-warning me-3"></i> 
+                                    <strong>Status:</strong> 
+                                    <span class="badge bg-success ms-1">{{ property.status|replace('_', ' ')|title }}</span>
+                                </li>
+                                {% if property.created_at %}
+                                <li class="mb-2">
+                                    <i class="fas fa-clock text-muted me-3"></i> 
+                                    <strong>Ditambahkan:</strong> {{ property.created_at[:10] }}
+                                </li>
+                                {% endif %}
                             </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Facilities Distance -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0"><i class="fas fa-map-signs me-2"></i>Jarak ke Fasilitas</h5>
+                </div>
+                <div class="card-body p-4">
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <div class="text-center p-4 bg-light rounded-3 h-100">
+                                <i class="fas fa-school text-primary fa-3x mb-3"></i>
+                                <h6 class="mb-2">Sekolah</h6>
+                                <p class="mb-0 fw-bold text-primary">{{ "%.0f"|format(property.jarak_sekolah) }} meter</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center p-4 bg-light rounded-3 h-100">
+                                <i class="fas fa-hospital text-success fa-3x mb-3"></i>
+                                <h6 class="mb-2">Rumah Sakit</h6>
+                                <p class="mb-0 fw-bold text-success">{{ "%.0f"|format(property.jarak_rs) }} meter</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="text-center p-4 bg-light rounded-3 h-100">
+                                <i class="fas fa-shopping-cart text-warning fa-3x mb-3"></i>
+                                <h6 class="mb-2">Pasar</h6>
+                                <p class="mb-0 fw-bold text-warning">{{ "%.0f"|format(property.jarak_pasar) }} meter</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -46,33 +127,73 @@
             
             <!-- Google Maps -->
             {% if property.latitude and property.longitude %}
-            <div class="card mt-4">
+            <div class="card">
                 <div class="card-header">
-                    <h5>Lokasi Properti</h5>
+                    <h5 class="mb-0"><i class="fas fa-map-marked-alt me-2"></i>Lokasi Properti</h5>
                 </div>
-                <div class="card-body">
-                    <div id="map" style="height: 300px;"></div>
+                <div class="card-body p-0">
+                    <div id="map" style="height: 350px; border-radius: 0 0 8px 8px;"></div>
                 </div>
             </div>
             {% endif %}
         </div>
+
+        <!-- Sidebar -->
         <div class="col-lg-4">
+            <!-- Contact Action -->
+            <div class="card mb-4">
+                <div class="card-body text-center p-4">
+                    <h6 class="mb-3">Tertarik dengan properti ini?</h6>
+                    <div class="d-grid gap-2">
+                        <button class="btn btn-primary btn-lg">
+                            <i class="fas fa-phone me-2"></i>Hubungi Penjual
+                        </button>
+                        <button class="btn btn-outline-primary">
+                            <i class="fas fa-heart me-2"></i>Simpan Favorit
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Similar Properties -->
             <div class="card">
                 <div class="card-header">
-                    <h5>Properti Serupa</h5>
+                    <h5 class="mb-0"><i class="fas fa-home me-2"></i>Properti Serupa</h5>
                 </div>
                 <div class="card-body">
                     {% for similar in similar_properties %}
-                    <div class="d-flex mb-3">
-                        <div class="flex-grow-1">
-                            <h6 class="mb-1">{{ similar.alamat[:50] }}...</h6>
-                            <small class="text-muted">{{ similar.kamar_tidur }} kamar • {{ similar.luas_tanah }}m²</small>
-                            {% if similar.harga %}
-                            <p class="text-primary mb-0">Rp {{ "{:,.0f}".format(similar.harga) }}</p>
-                            {% endif %}
+                    <a href="{{ url_for('main.property_detail', property_id=similar.id) }}" class="text-decoration-none">
+                        <div class="card mb-3 border-0 shadow-sm" style="transition: transform 0.2s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'">
+                            <div class="row g-0">
+                                <div class="col-4">
+                                    {% if similar.image %}
+                                    <img src="{{ url_for('static', filename='images/' + similar.image) }}" 
+                                         class="img-fluid rounded-start h-100" style="object-fit: cover; min-height: 80px;" 
+                                         alt="Property Image">
+                                    {% else %}
+                                    <div class="bg-light rounded-start d-flex align-items-center justify-content-center h-100" 
+                                         style="min-height: 80px;">
+                                        <i class="fas fa-home text-muted"></i>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                <div class="col-8">
+                                    <div class="card-body p-2">
+                                        <h6 class="card-title mb-1 text-truncate">{{ similar.judul_properti or similar.alamat[:40] + '...' }}</h6>
+                                        <p class="text-muted mb-1 small">{{ similar.kelurahan or 'Lokasi' }}</p>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <small class="text-muted">{{ similar.kamar_tidur }}KT • {{ similar.luas_tanah }}m²</small>
+                                        </div>
+                                        {% if similar.harga %}
+                                        <div class="mt-1">
+                                            <small class="text-primary fw-bold">Rp {{ "{:,.0f}".format(similar.harga) }}</small>
+                                        </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                    <hr>
+                    </a>
                     {% endfor %}
                 </div>
             </div>

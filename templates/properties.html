@@ -52,7 +52,10 @@
                 </div>
                 {% endif %}
                 <div class="card-body">
-                    <h5 class="card-title">{{ property.alamat or 'Alamat tidak tersedia' }}</h5>
+                    <h5 class="card-title">{{ property.judul_properti or property.alamat or 'Judul tidak tersedia' }}</h5>
+                    <p class="card-text text-muted mb-2">
+                        <i class="fas fa-map-marker-alt"></i> {{ property.kelurahan or 'Lokasi' }} • {{ (property.alamat[:30] + '...' if property.alamat|length > 30 else property.alamat) if property.alamat else '' }}
+                    </p>
                     <p class="card-text">
                         <i class="fas fa-bed"></i> {{ property.kamar_tidur }} kamar &nbsp;
                         <i class="fas fa-bath"></i> {{ property.kamar_mandi }} kamar mandi<br>

@@ -50,7 +50,7 @@ def property_detail(property_id):
 @main_bp.route('/predict', methods=['GET', 'POST'])
 def price_prediction():
     """Price prediction page"""
-    prediction = None
+    price_range = None
     
     if request.method == 'POST':
         property_data = {
@@ -58,21 +58,28 @@ def price_prediction():
             'luas_bangunan': request.form.get('luas_bangunan'),
             'kamar_tidur': request.form.get('kamar_tidur'),
             'kamar_mandi': request.form.get('kamar_mandi'),
-            'carport': request.form.get('carport'),
-            'tahun_dibangun': request.form.get('tahun_dibangun'),
-            'jarak_sekolah': request.form.get('jarak_sekolah'),
-            'jarak_rs': request.form.get('jarak_rs'),
-            'jarak_pasar': request.form.get('jarak_pasar'),
+            'carport': request.form.get('carport', 0),
+            'tahun_dibangun': request.form.get('tahun_dibangun', 2020),
+            'jarak_sekolah': request.form.get('jarak_sekolah', 1000),
+            'jarak_rs': request.form.get('jarak_rs', 2000),
+            'jarak_pasar': request.form.get('jarak_pasar', 1500),
             'jenis_jalan': request.form.get('jenis_jalan'),
             'kondisi': request.form.get('kondisi'),
-            'sertifikat': request.form.get('sertifikat')
+            'sertifikat': request.form.get('sertifikat', 'hgb')
         }
         
-        prediction_value = ml_service.predict_price(property_data)
-        if prediction_value:
-            prediction = f"Rp {prediction_value:,.0f}"
+        prediction_range = ml_service.get_price_range(property_data)
+        if prediction_range:
+            price_range = {
+                'predicted': prediction_range['predicted_price'],
+                'min': prediction_range['min_price'],
+                'max': prediction_range['max_price'],
+                'formatted_predicted': f"Rp {prediction_range['predicted_price']:,.0f}",
+                'formatted_min': f"Rp {prediction_range['min_price']:,.0f}",
+                'formatted_max': f"Rp {prediction_range['max_price']:,.0f}"
+            }
     
-    return render_template('predict.html', prediction=prediction)
+    return render_template('predict.html', price_range=price_range)
 
 @main_bp.route('/chat', methods=['GET', 'POST'])
 def chat():
