@@ -2,6 +2,7 @@
   {
     "judul_properti": "Rumah Subsidi",
     "kelurahan": "Majasari",
+    "kecamatan": "Prabumulih Timur",
     "alamat": "jalan kemang no 81 depan taman siswa",
     "luas_tanah": 100,
     "luas_bangunan": 197,
@@ -9,6 +10,8 @@
     "kamar_mandi": 4,
     "carport": 0,
     "tahun_dibangun": 2020,
+    "lantai": 1,
+    "kota": "Prabumulih",
     "harga": 300000000.0,
     "latitude": 32527.4,
     "longitude": 1041340.4,
@@ -50,5 +53,31 @@
     "status": "available",
     "id": "3a452751-dde5-4005-b5a1-b4ab368ad19f",
     "created_at": "2025-09-25T13:48:43.977181"
+  },
+  {
+    "id": "018d9278-8964-491a-84bf-f42c8ef474a8",
+    "judul_properti": "Ruko",
+    "kelurahan": "Majasari",
+    "alamat": "test jalan",
+    "luas_tanah": 120,
+    "luas_bangunan": 80,
+    "kamar_tidur": 3,
+    "kamar_mandi": 2,
+    "carport": 0,
+    "tahun_dibangun": 2020,
+    "harga": 450000000.0,
+    "latitude": -3.417081,
+    "longitude": 104.266761,
+    "jarak_sekolah": 1000.0,
+    "jarak_rs": 2000.0,
+    "jarak_pasar": 1500.0,
+    "jenis_jalan": "jalan_besar",
+    "kondisi": "baik",
+    "sertifikat": "SHM",
+    "nama_penjual": "orang",
+    "nomor_penjual": "085709557572",
+    "image": "d2a74cff-496b-4009-92be-b5109f7dad79_134016989297645913.jpg",
+    "created_at": "2025-09-27T04:26:25.309664",
+    "status": "available"
   }
 ]

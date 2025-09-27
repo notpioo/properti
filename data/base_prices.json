@@ -1,9 +1,11 @@
 {
-  "region": "Prabumulih, Sumatera Selatan",
-  "base_price_per_sqm_land": 800000,
-  "base_price_per_sqm_building": 1800000,
-  "room_multiplier": 3500000,
-  "bathroom_multiplier": 2000000,
+  "base_price_per_sqm_land": 800000.0,
+  "base_price_per_sqm_building": 1800000.0,
+  "room_multiplier": 3500000.0,
+  "bathroom_multiplier": 2000000.0,
+  "floor_multiplier": 75000000.0,
+  "carport_multiplier": 5000000.0,
+  "year_bonus_per_year": 1000000.0,
   "condition_multipliers": {
     "baru": 1.2,
     "baik": 1.0,
@@ -11,24 +13,13 @@
     "butuh_renovasi": 0.7
   },
   "road_multipliers": {
-    "gang_kecil": 0.85,
+    "jalan_besar": 1.2,
     "jalan_sedang": 1.0,
-    "jalan_besar": 1.2
+    "gang_kecil": 0.85
   },
   "certificate_multipliers": {
     "shm": 1.15,
     "hgb": 1.0,
     "girik": 0.8
-  },
-  "location_factors": {
-    "city_center": 1.3,
-    "residential": 1.0,
-    "suburban": 0.85,
-    "rural": 0.7
-  },
-  "market_data": {
-    "last_updated": "2024-01-01",
-    "average_price_per_sqm": 1200000,
-    "market_trend": "stable"
   }
 }

@@ -6,7 +6,7 @@
         <div class="col-lg-10">
             <!-- Header Section -->
             <div class="text-center mb-5">
-                <h2 class="display-5 fw-bold text-primary">Prediksi Harga Rumah</h2>
+                <h2 class="display-5 fw-bold text-primary">Prediksi Harga</h2>
                 <p class="lead text-muted">Dapatkan estimasi harga rumah yang akurat dengan teknologi AI</p>
             </div>
 
@@ -40,13 +40,17 @@
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-md-6 mb-3">
+                                    <div class="col-md-4 mb-3">
                                         <label class="form-label fw-semibold">Carport</label>
                                         <input type="number" class="form-control form-control-lg" name="carport" value="{{ request.form.get('carport', '0') }}" min="0" placeholder="Jumlah mobil">
                                     </div>
-                                    <div class="col-md-6 mb-3">
+                                    <div class="col-md-4 mb-3">
                                         <label class="form-label fw-semibold">Tahun Dibangun</label>
                                         <input type="number" class="form-control form-control-lg" name="tahun_dibangun" value="{{ request.form.get('tahun_dibangun', '') }}" min="1900" max="2030" placeholder="Contoh: 2020">
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <label class="form-label fw-semibold">Jumlah Lantai</label>
+                                        <input type="number" class="form-control form-control-lg" name="lantai" value="{{ request.form.get('lantai', '1') }}" min="1" placeholder="Contoh: 2" required>
                                     </div>
                                 </div>
                                 <div class="row">

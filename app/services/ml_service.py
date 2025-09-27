@@ -34,6 +34,7 @@ class MLPredictionService:
                     int(prop.get('kamar_mandi', 1)),
                     int(prop.get('carport', 0)),
                     int(prop.get('tahun_dibangun', 2020)),
+                    int(prop.get('lantai', 1)),
                     float(prop.get('jarak_sekolah', 1000)),
                     float(prop.get('jarak_rs', 2000)),
                     float(prop.get('jarak_pasar', 1500)),
@@ -125,6 +126,7 @@ class MLPredictionService:
             int(property_data.get('kamar_mandi', 1)),
             int(property_data.get('carport', 0)),
             int(property_data.get('tahun_dibangun', 2020)),
+            int(property_data.get('lantai', 1)),
             float(property_data.get('jarak_sekolah', 1000)),
             float(property_data.get('jarak_rs', 2000)),
             float(property_data.get('jarak_pasar', 1500)),
@@ -155,14 +157,16 @@ class MLPredictionService:
             luas_bangunan = float(property_data.get('luas_bangunan', 80))
             kamar_tidur = int(property_data.get('kamar_tidur', 2))
             kamar_mandi = int(property_data.get('kamar_mandi', 1))
+            lantai = int(property_data.get('lantai', 1))
             
             # Base price calculation
             land_value = luas_tanah * base_prices['base_price_per_sqm_land']
             building_value = luas_bangunan * base_prices['base_price_per_sqm_building']
             room_bonus = kamar_tidur * base_prices['room_multiplier']
             bathroom_bonus = kamar_mandi * base_prices['bathroom_multiplier']
+            floor_bonus = lantai * base_prices.get('floor_multiplier', 10000000)  # Default 10M per floor
             
-            base_total = land_value + building_value + room_bonus + bathroom_bonus
+            base_total = land_value + building_value + room_bonus + bathroom_bonus + floor_bonus
             
             # Apply multipliers
             kondisi = property_data.get('kondisi', 'baik')

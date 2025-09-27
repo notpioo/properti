@@ -46,6 +46,16 @@
                         <input type="number" class="form-control bg-dark text-light border-secondary" name="tahun_dibangun" value="{{ property.tahun_dibangun }}">
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-light">Jumlah Lantai</label>
+                        <input type="number" class="form-control bg-dark text-light border-secondary" name="lantai" value="{{ property.lantai or 1 }}" min="1" placeholder="Contoh: 2">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label text-light">Kota</label>
+                        <input type="text" class="form-control bg-dark text-light border-secondary" name="kota" value="{{ property.kota or '' }}" placeholder="Contoh: Jakarta" required>
+                    </div>
+                </div>
                 <div class="mb-3">
                     <label class="form-label text-light">Judul Properti</label>
                     <input type="text" class="form-control bg-dark text-light border-secondary" name="judul_properti" value="{{ property.judul_properti or '' }}" placeholder="Contoh: Rumah Modern Minimalis" required>
@@ -56,9 +66,13 @@
                         <input type="text" class="form-control bg-dark text-light border-secondary" name="kelurahan" value="{{ property.kelurahan or '' }}" placeholder="Contoh: Kemang" required>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label text-light">Alamat Lengkap</label>
-                        <input type="text" class="form-control bg-dark text-light border-secondary" name="alamat" value="{{ property.alamat }}" placeholder="Jalan lengkap dengan nomor" required>
+                        <label class="form-label text-light">Kecamatan</label>
+                        <input type="text" class="form-control bg-dark text-light border-secondary" name="kecamatan" value="{{ property.kecamatan or '' }}" placeholder="Contoh: Mampang Prapatan" required>
                     </div>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label text-light">Alamat Lengkap</label>
+                    <input type="text" class="form-control bg-dark text-light border-secondary" name="alamat" value="{{ property.alamat }}" placeholder="Jalan lengkap dengan nomor" required>
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-3">

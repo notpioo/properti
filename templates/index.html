@@ -97,17 +97,45 @@
                                                 </select>
                                             </div>
                                         </div>
+                                        <div class="row">
+                                            <div class="col-md-4 mb-3">
+                                                <label class="form-label text-white">Carport</label>
+                                                <input type="number" class="form-control" id="carport" min="0" placeholder="Jumlah mobil">
+                                            </div>
+                                            <div class="col-md-4 mb-3">
+                                                <label class="form-label text-white">Tahun Dibangun</label>
+                                                <input type="number" class="form-control" id="tahun_dibangun" min="1900" max="2030" placeholder="Contoh: 2020">
+                                            </div>
+                                            <div class="col-md-4 mb-3">
+                                                <label class="form-label text-white">Jumlah Lantai</label>
+                                                <input type="number" class="form-control" id="lantai" min="1" placeholder="Contoh: 2" required>
+                                            </div>
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="form-label text-white">Sertifikat</label>
+                                            <select class="form-select" id="sertifikat">
+                                                <option value="">Pilih sertifikat</option>
+                                                <option value="shm">SHM (Sertifikat Hak Milik)</option>
+                                                <option value="hgb">HGB (Hak Guna Bangunan)</option>
+                                                <option value="girik">Girik/Letter C</option>
+                                            </select>
+                                        </div>
                                         <button type="submit" class="btn btn-primary w-100">
                                             <i class="fas fa-calculator"></i> Prediksi Harga
                                         </button>
                                     </form>
 
                                     <!-- Prediction Result -->
-                                    <div id="predictionResult" class="mt-4" style="display: none;">
-                                        <div class="alert alert-success">
-                                            <h6>Hasil Prediksi:</h6>
-                                            <h4 class="text-success" id="predictedPrice"></h4>
-                                            <small class="text-muted">*Prediksi berdasarkan model machine learning</small>
+                                    <div id="predictionResult" class="mt-3" style="display: none;">
+                                        <div class="card bg-dark border-success">
+                                            <div class="card-header bg-success text-dark">
+                                                <h6 class="mb-0"><i class="fas fa-chart-line"></i> Hasil Prediksi</h6>
+                                            </div>
+                                            <div class="card-body bg-dark text-white">
+                                                <h5 class="text-success mb-1">Hasil Prediksi:</h5>
+                                                <h3 id="predictPrice" class="text-white fw-bold"></h3>
+                                                <small class="text-muted">* Prediksi berdasarkan model machine learning</small>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -138,7 +166,7 @@
                     <div class="card-body">
                         <h5 class="card-title">{{ property.judul_properti or property.alamat or 'Judul tidak tersedia' }}</h5>
                         <p class="card-text text-muted mb-2">
-                            <i class="fas fa-map-marker-alt"></i> {{ property.kelurahan or 'Lokasi' }} • {{ (property.alamat[:30] + '...' if property.alamat|length > 30 else property.alamat) if property.alamat else '' }}
+                            <i class="fas fa-map-marker-alt"></i> {{ property.kelurahan or 'Lokasi' }}{% if property.kecamatan %}, {{ property.kecamatan }}{% endif %} • {{ (property.alamat[:30] + '...' if property.alamat|length > 30 else property.alamat) if property.alamat else '' }}
                         </p>
                         <p class="card-text">
                             <i class="fas fa-bed"></i> {{ property.kamar_tidur }} kamar &nbsp;
@@ -234,8 +262,12 @@ document.getElementById('predictForm').addEventListener('submit', function(e) {
         luas_bangunan: document.getElementById('luas_bangunan').value,
         kamar_tidur: document.getElementById('kamar_tidur').value,
         kamar_mandi: document.getElementById('kamar_mandi').value,
+        carport: document.getElementById('carport').value || 0,
+        tahun_dibangun: document.getElementById('tahun_dibangun').value || 2020,
+        lantai: document.getElementById('lantai').value || 1,
         jenis_jalan: document.getElementById('jenis_jalan').value,
-        kondisi: document.getElementById('kondisi').value
+        kondisi: document.getElementById('kondisi').value,
+        sertifikat: document.getElementById('sertifikat').value || 'hgb'
     };
 
     fetch('/api/predict', {
@@ -249,7 +281,7 @@ document.getElementById('predictForm').addEventListener('submit', function(e) {
     .then(data => {
         if (data.formatted) {
             document.getElementById('predictionResult').style.display = 'block';
-            document.getElementById('predictedPrice').textContent = data.formatted;
+            document.getElementById('predictPrice').textContent = data.formatted;
         }
     })
     .catch(error => {
@@ -306,7 +338,7 @@ function loadPropertiesFromDatabase(query) {
                                 <div class="col-8">
                                     <div class="card-body p-2">
                                         <h6 class="card-title mb-1 text-white">${property.judul_properti || property.alamat || 'Judul tidak tersedia'}</h6>
-                                        <small class="text-muted">${property.kelurahan || 'Lokasi'}</small>
+                                        <small class="text-muted">${property.kelurahan || 'Lokasi'}${property.kecamatan ? ', ' + property.kecamatan : ''}</small><br>
                                         <small class="text-light">${property.kamar_tidur} kamar • ${property.luas_tanah}m²</small>
                                         ${property.harga ? `<p class="text-primary mb-0"><strong>Rp ${property.harga.toLocaleString()}</strong></p>` : ''}
                                     </div>

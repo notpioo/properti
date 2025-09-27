@@ -16,7 +16,7 @@ class Config:
     # ML Model configuration
     FEATURE_COLUMNS = [
         'luas_tanah', 'luas_bangunan', 'kamar_tidur', 'kamar_mandi', 
-        'carport', 'tahun_dibangun', 'jarak_sekolah', 'jarak_rs', 
+        'carport', 'tahun_dibangun', 'lantai', 'jarak_sekolah', 'jarak_rs', 
         'jarak_pasar', 'jenis_jalan_encoded', 'kondisi_encoded', 'sertifikat_encoded'
     ]
 

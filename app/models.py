@@ -81,6 +81,9 @@ class BasePriceRepository:
                 'base_price_per_sqm_building': 2000000,  # Rp per m2 bangunan
                 'room_multiplier': 50000000,  # Bonus per kamar
                 'bathroom_multiplier': 25000000,  # Bonus per kamar mandi
+                'floor_multiplier': 10000000,  # Bonus per lantai
+                'carport_multiplier': 15000000,  # Bonus per carport
+                'year_bonus_per_year': 2000000,  # Bonus per tahun setelah 2000
                 'condition_multipliers': {
                     'baru': 1.3,
                     'baik': 1.0,

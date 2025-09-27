@@ -36,7 +36,7 @@
                             <h2 class="card-title mb-2">{{ property.judul_properti or property.alamat }}</h2>
                             <div class="d-flex align-items-center text-muted mb-2">
                                 <i class="fas fa-map-marker-alt me-2"></i>
-                                <span><strong>{{ property.kelurahan or 'Kelurahan tidak tersedia' }}</strong></span>
+                                <span><strong>{{ property.kelurahan or 'Kelurahan tidak tersedia' }}</strong>{% if property.kecamatan %}, {{ property.kecamatan }}{% endif %}{% if property.kota %}, {{ property.kota }}{% endif %}</span>
                             </div>
                             <p class="text-muted mb-0">{{ property.alamat }}</p>
                         </div>
@@ -65,6 +65,7 @@
                                 <li class="mb-2"><i class="fas fa-ruler-combined text-success me-3"></i> {{ property.luas_tanah }}m² Luas Tanah</li>
                                 <li class="mb-2"><i class="fas fa-home text-warning me-3"></i> {{ property.luas_bangunan }}m² Luas Bangunan</li>
                                 <li class="mb-2"><i class="fas fa-calendar text-secondary me-3"></i> Tahun {{ property.tahun_dibangun }}</li>
+                                <li class="mb-2"><i class="fas fa-building text-purple me-3"></i> {{ property.lantai or 1 }} Lantai</li>
                                 {% if property.carport %}
                                 <li class="mb-2"><i class="fas fa-car text-dark me-3"></i> {{ property.carport }} Carport</li>
                                 {% endif %}
@@ -210,7 +211,7 @@
                                 <div class="col-8">
                                     <div class="card-body p-2">
                                         <h6 class="card-title mb-1 text-truncate">{{ similar.judul_properti or similar.alamat[:40] + '...' }}</h6>
-                                        <p class="text-muted mb-1 small">{{ similar.kelurahan or 'Lokasi' }}</p>
+                                        <p class="text-muted mb-1 small">{{ similar.kelurahan or 'Lokasi' }}{% if similar.kecamatan %}, {{ similar.kecamatan }}{% endif %}{% if similar.kota %}, {{ similar.kota }}{% endif %}</p>
                                         <div class="d-flex justify-content-between align-items-center">
                                             <small class="text-muted">{{ similar.kamar_tidur }}KT • {{ similar.luas_tanah }}m²</small>
                                         </div>
